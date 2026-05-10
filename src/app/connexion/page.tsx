@@ -2,24 +2,10 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 
 export default function PageConnexion() {
-  const router = useRouter()
-
-  useEffect(() => {
-    const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        router.push('/dashboard')
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [router])
-
   async function connexionGoogle() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({

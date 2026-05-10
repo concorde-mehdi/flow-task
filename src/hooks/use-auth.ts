@@ -23,15 +23,10 @@ export function useRequireAuth() {
       return
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION' && !session) {
-        router.push('/connexion')
-      }
-      if (event === 'SIGNED_OUT') {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
         router.push('/connexion')
       }
     })
-
-    return () => subscription.unsubscribe()
   }, [router])
 }
