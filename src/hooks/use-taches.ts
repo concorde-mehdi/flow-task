@@ -6,9 +6,8 @@ import { toast } from 'sonner'
 import type { Tache, NouvellesTache, FiltresTaches } from '@/types'
 import { estUrgente } from '@/lib/utils'
 
-const supabase = createClient()
-
 async function fetchTaches(): Promise<Tache[]> {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('taches')
     .select('*')
@@ -60,6 +59,7 @@ export function useCreerTache() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (tache: NouvellesTache) => {
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       const { data, error } = await supabase
         .from('taches')
@@ -97,6 +97,7 @@ export function useToggleTache() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, statut }: { id: string; statut: boolean }) => {
+      const supabase = createClient()
       const { error } = await supabase
         .from('taches')
         .update({ statut, updated_at: new Date().toISOString() })
@@ -124,6 +125,7 @@ export function useModifierTache() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Tache> & { id: string }) => {
+      const supabase = createClient()
       const { error } = await supabase
         .from('taches')
         .update({ ...updates, updated_at: new Date().toISOString() })
@@ -142,6 +144,7 @@ export function useSupprimerTache() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
+      const supabase = createClient()
       const { error } = await supabase.from('taches').delete().eq('id', id)
       if (error) throw error
     },
