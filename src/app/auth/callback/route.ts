@@ -31,5 +31,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/connexion?erreur=authentification`)
+  return NextResponse.redirect(`${origin}/connexion?erreur=${encodeURIComponent(error?.message ?? 'code_manquant')}`)
 }
