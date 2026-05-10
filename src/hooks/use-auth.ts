@@ -9,10 +9,21 @@ export function useRequireAuth() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
-        router.push('/connexion')
-      }
-    })
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (!error) {
+          window.history.replaceState({}, '', window.location.pathname)
+        } else {
+          router.push('/connexion')
+        }
+      })
+    } else {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session) router.push('/connexion')
+      })
+    }
   }, [router])
 }
