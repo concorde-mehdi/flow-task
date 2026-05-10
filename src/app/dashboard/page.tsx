@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState } from 'react'
+import { useRequireAuth } from '@/hooks/use-auth'
 import { Header } from '@/components/layout/header'
 import { Sidebar } from '@/components/layout/sidebar'
 import { BottomNav } from '@/components/layout/bottom-nav'
@@ -20,6 +21,7 @@ import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
 export default function PageDashboard() {
+  useRequireAuth()
   const [formulaireOuvert, setFormulaireOuvert] = useState(false)
   const [tacheAModifier, setTacheAModifier] = useState<Tache | null>(null)
 
