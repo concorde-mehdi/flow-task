@@ -2,41 +2,45 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  try {
+    let supabaseResponse = NextResponse.next({ request })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            supabaseResponse = NextResponse.next({ request })
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options)
+            )
+          },
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
+      }
+    )
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const routesProtegees = ['/dashboard', '/taches', '/calendrier', '/parametres']
+    const estRouteProtegee = routesProtegees.some(r => request.nextUrl.pathname.startsWith(r))
+
+    if (!user && estRouteProtegee) {
+      return NextResponse.redirect(new URL('/connexion', request.url))
     }
-  )
 
-  const { data: { user } } = await supabase.auth.getUser()
+    if (user && request.nextUrl.pathname === '/connexion') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
 
-  const routesProtegees = ['/dashboard', '/taches', '/calendrier', '/parametres']
-  const estRouteProtegee = routesProtegees.some(r => request.nextUrl.pathname.startsWith(r))
-
-  if (!user && estRouteProtegee) {
-    return NextResponse.redirect(new URL('/connexion', request.url))
+    return supabaseResponse
+  } catch {
+    return NextResponse.next({ request })
   }
-
-  if (user && request.nextUrl.pathname === '/connexion') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  return supabaseResponse
 }
 
 export const config = {
