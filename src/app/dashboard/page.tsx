@@ -8,6 +8,7 @@ import { Header } from '@/components/layout/header'
 import { Sidebar } from '@/components/layout/sidebar'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { StatsBar } from '@/components/dashboard/stats-bar'
+import { CarteUtilisateur } from '@/components/dashboard/carte-utilisateur'
 import { AjoutRapide } from '@/components/dashboard/ajout-rapide'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
@@ -17,8 +18,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { AlertTriangle, RefreshCcw, CalendarClock, CheckCircle2 } from 'lucide-react'
 import type { Tache } from '@/types'
 import { trierParPriorite } from '@/lib/utils'
-import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
 
 export default function PageDashboard() {
   useRequireAuth()
@@ -54,12 +53,8 @@ export default function PageDashboard() {
         <Header titre="Tableau de bord" />
 
         <main className="flex-1 p-6 pb-24 md:pb-6 space-y-6 max-w-5xl mx-auto w-full">
-          {/* Date du jour */}
-          <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-              {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}
-            </p>
-          </div>
+          {/* Carte utilisateur */}
+          <CarteUtilisateur />
 
           {/* Statistiques */}
           <StatsBar />

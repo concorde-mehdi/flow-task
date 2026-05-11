@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 const navigation = [
   { nom: 'Tableau de bord', href: '/dashboard', icone: LayoutDashboard },
@@ -15,15 +16,27 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const [logoError, setLogoError] = useState(false)
 
   return (
     <aside className="hidden md:flex flex-col w-60 min-h-screen bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 px-3 py-6">
-      {/* Logo */}
+      {/* Logo clinique */}
       <div className="flex items-center gap-3 px-3 mb-8">
-        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-sm">
-          <CheckSquare className="w-4 h-4 text-white" />
-        </div>
-        <span className="font-bold text-gray-900 dark:text-white text-lg">FlowTask</span>
+        {!logoError ? (
+          <img
+            src="/logo-clinique.png"
+            alt="Logo Clinique"
+            className="h-9 w-auto max-w-[140px] object-contain"
+            onError={() => setLogoError(true)}
+          />
+        ) : (
+          <>
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-sm shrink-0">
+              <CheckSquare className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-bold text-gray-900 dark:text-white text-lg">FlowTask</span>
+          </>
+        )}
       </div>
 
       {/* Navigation */}
