@@ -62,7 +62,7 @@ export function CarteCharge({ charge, onModifier }: Props) {
             'text-sm font-bold shrink-0',
             estPayee ? 'text-gray-400' : enRetard ? 'text-red-500' : 'text-gray-900 dark:text-white'
           )}>
-            {charge.montant.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+            {charge.montant.toLocaleString('fr-TN', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' DT'}
           </span>
         </div>
 

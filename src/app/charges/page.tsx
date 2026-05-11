@@ -73,19 +73,19 @@ export default function PageCharges() {
               icone={<Wallet className="w-3.5 h-3.5 text-blue-500" />}
               fond="bg-blue-50 dark:bg-blue-950/30"
               label="Ce mois-ci"
-              valeur={totalMois.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+              valeur={totalMois.toLocaleString('fr-TN', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' DT'}
             />
             <StatCard
               icone={<TrendingDown className="w-3.5 h-3.5 text-purple-500" />}
               fond="bg-purple-50 dark:bg-purple-950/30"
               label="Total dépenses"
-              valeur={totalDepenses.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+              valeur={totalDepenses.toLocaleString('fr-TN', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' DT'}
             />
             <StatCard
               icone={<Clock className="w-3.5 h-3.5 text-orange-500" />}
               fond="bg-orange-50 dark:bg-orange-950/30"
               label="En attente"
-              valeur={montantEnAttente.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+              valeur={montantEnAttente.toLocaleString('fr-TN', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' DT'}
             />
             <StatCard
               icone={<CheckCircle2 className="w-3.5 h-3.5 text-green-500" />}
