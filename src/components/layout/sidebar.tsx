@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
@@ -10,6 +10,7 @@ import { useState } from 'react'
 const navigation = [
   { nom: 'Tableau de bord', href: '/dashboard', icone: LayoutDashboard },
   { nom: 'Mes tâches', href: '/taches', icone: ListTodo },
+  { nom: 'Mes charges', href: '/charges', icone: Wallet },
   { nom: 'Calendrier', href: '/calendrier', icone: Calendar },
   { nom: 'Paramètres', href: '/parametres', icone: Settings },
 ]

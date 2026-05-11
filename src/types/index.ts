@@ -34,3 +34,22 @@ export interface FiltresTaches {
   tag?: string
   recherche?: string
 }
+
+export type TypeCharge = 'depense' | 'facture'
+export type StatutCharge = 'paye' | 'en_attente'
+
+export interface Charge {
+  id: string
+  user_id: string
+  titre: string
+  montant: number
+  type: TypeCharge
+  categorie: string | null
+  statut: StatutCharge
+  date_charge: string
+  date_echeance: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type NouvelleCharge = Omit<Charge, 'id' | 'user_id' | 'created_at'>
