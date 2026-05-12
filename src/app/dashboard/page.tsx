@@ -12,6 +12,10 @@ import { CarteUtilisateur } from '@/components/dashboard/carte-utilisateur'
 import { AjoutRapide } from '@/components/dashboard/ajout-rapide'
 import { WidgetCharges } from '@/components/dashboard/widget-charges'
 import { WidgetLiens } from '@/components/dashboard/widget-liens'
+import { WidgetMeteo } from '@/components/dashboard/widget-meteo'
+import { WidgetEmailsRecents } from '@/components/dashboard/widget-emails-recents'
+import { WidgetNotes } from '@/components/dashboard/widget-notes'
+import { WidgetRaccourcis } from '@/components/dashboard/widget-raccourcis'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { SqueletteListe } from '@/components/taches/squelette-tache'
@@ -58,14 +62,26 @@ export default function PageDashboard() {
           {/* Carte utilisateur */}
           <CarteUtilisateur />
 
+          {/* Météo + Emails récents */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <WidgetMeteo />
+            <WidgetEmailsRecents />
+          </div>
+
           {/* Statistiques */}
           <StatsBar />
 
-          {/* Widgets charges + liens */}
+          {/* Charges + Liens */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <WidgetCharges />
             <WidgetLiens />
           </div>
+
+          {/* Notes rapides */}
+          <WidgetNotes />
+
+          {/* Raccourcis Telegram */}
+          <WidgetRaccourcis />
 
           {/* Ajout rapide */}
           <AjoutRapide onOuvrir={() => setFormulaireOuvert(true)} />

@@ -74,3 +74,60 @@ export interface Lien {
 export type NouveauLien = Omit<Lien, 'id' | 'user_id' | 'created_at'>
 
 export const CATEGORIES_LIENS = ['Documentation', 'Outils IT', 'Formation', 'Ressources clinique', 'Fournisseurs'] as const
+
+export interface Contact {
+  id: string
+  user_id: string
+  nom: string
+  poste: string | null
+  telephone: string | null
+  email: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauContact = Omit<Contact, 'id' | 'user_id' | 'created_at'>
+
+export type StatutDevis = 'envoye' | 'en_attente_signature' | 'paye' | 'refuse'
+
+export interface Devis {
+  id: string
+  user_id: string
+  titre: string
+  entreprise: string | null
+  montant: number | null
+  statut: StatutDevis
+  date_devis: string
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauDevis = Omit<Devis, 'id' | 'user_id' | 'created_at'>
+
+export type StatutMateriel = 'commande' | 'en_livraison' | 'livre' | 'en_panne'
+
+export interface Materiel {
+  id: string
+  user_id: string
+  titre: string
+  quantite: number
+  statut: StatutMateriel
+  fournisseur: string | null
+  date_commande: string | null
+  date_livraison_prevue: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauMateriel = Omit<Materiel, 'id' | 'user_id' | 'created_at'>
+
+export interface Raccourci {
+  id: string
+  user_id: string
+  titre: string
+  type: 'telegram' | 'email'
+  message: string
+  created_at: string
+}
+
+export type NouveauRaccourci = Omit<Raccourci, 'id' | 'user_id' | 'created_at'>
