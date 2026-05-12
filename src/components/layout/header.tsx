@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, CheckSquare } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
@@ -16,6 +16,7 @@ interface HeaderProps {
 export function Header({ titre }: HeaderProps) {
   const router = useRouter()
   const [utilisateur, setUtilisateur] = useState<SupabaseUser | null>(null)
+  const [logoError, setLogoError] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -37,7 +38,26 @@ export function Header({ titre }: HeaderProps) {
 
   return (
     <header className="h-16 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-6">
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{titre}</h1>
+      {/* Mobile : logo clinique */}
+      <div className="flex items-center md:hidden">
+        {!logoError ? (
+          <img
+            src="/logo-clinique.png"
+            alt="Logo"
+            className="h-8 w-auto max-w-[130px] object-contain"
+            onError={() => setLogoError(true)}
+          />
+        ) : (
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center shadow-sm">
+              <CheckSquare className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="font-bold text-gray-900 dark:text-white">FlowTask</span>
+          </div>
+        )}
+      </div>
+      {/* Desktop : titre de la page */}
+      <h1 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white">{titre}</h1>
 
       <div className="flex items-center gap-3">
         <ThemeToggle />
