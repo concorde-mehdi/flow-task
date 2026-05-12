@@ -10,6 +10,8 @@ import { BottomNav } from '@/components/layout/bottom-nav'
 import { StatsBar } from '@/components/dashboard/stats-bar'
 import { CarteUtilisateur } from '@/components/dashboard/carte-utilisateur'
 import { AjoutRapide } from '@/components/dashboard/ajout-rapide'
+import { WidgetCharges } from '@/components/dashboard/widget-charges'
+import { WidgetLiens } from '@/components/dashboard/widget-liens'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { SqueletteListe } from '@/components/taches/squelette-tache'
@@ -58,6 +60,12 @@ export default function PageDashboard() {
 
           {/* Statistiques */}
           <StatsBar />
+
+          {/* Widgets charges + liens */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <WidgetCharges />
+            <WidgetLiens />
+          </div>
 
           {/* Ajout rapide */}
           <AjoutRapide onOuvrir={() => setFormulaireOuvert(true)} />

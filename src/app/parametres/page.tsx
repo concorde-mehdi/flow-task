@@ -20,14 +20,40 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 export default function PageParametres() {
   const [utilisateur, setUtilisateur] = useState<SupabaseUser | null>(null)
   const [notificationsActives, setNotificationsActives] = useState(false)
+  const [titrePoste, setTitrePoste] = useState('Responsable IT')
+  const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false)
   const router = useRouter()
   const supabase = createClient()
   const { theme } = useTheme()
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUtilisateur(data.user))
+    supabase.auth.getUser().then(async ({ data }) => {
+      setUtilisateur(data.user)
+      if (data.user) {
+        const { data: profil } = await supabase
+          .from('profils')
+          .select('titre_poste')
+          .eq('user_id', data.user.id)
+          .single()
+        if (profil) setTitrePoste(profil.titre_poste)
+      }
+    })
     setNotificationsActives(Notification.permission === 'granted')
   }, [])
+
+  async function sauvegarderTitre() {
+    if (!utilisateur) return
+    setSauvegardeEnCours(true)
+    const { error } = await supabase
+      .from('profils')
+      .upsert({ user_id: utilisateur.id, titre_poste: titrePoste.trim(), updated_at: new Date().toISOString() })
+    setSauvegardeEnCours(false)
+    if (error) {
+      toast.error('Erreur lors de la sauvegarde')
+    } else {
+      toast.success('Titre de poste mis à jour !')
+    }
+  }
 
   async function demanderNotifications() {
     if (!('Notification' in window)) {
@@ -82,6 +108,27 @@ export default function PageParametres() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{utilisateur?.email}</p>
                   <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">Connecté via Google</p>
                 </div>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Titre de poste</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={titrePoste}
+                    onChange={e => setTitrePoste(e.target.value)}
+                    placeholder="Ex : Responsable IT"
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={sauvegarderTitre}
+                    disabled={sauvegardeEnCours || !titrePoste.trim()}
+                    size="sm"
+                    className="shrink-0"
+                  >
+                    {sauvegardeEnCours ? 'Sauvegarde…' : 'Sauvegarder'}
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-400 dark:text-gray-600">Affiché sous votre nom sur le dashboard</p>
               </div>
             </section>
 

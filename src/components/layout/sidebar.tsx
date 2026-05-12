@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare, Wallet, Mail } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare, Wallet, Mail, Link2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
@@ -12,6 +12,7 @@ const navigation = [
   { nom: 'Mes tâches', href: '/taches', icone: ListTodo },
   { nom: 'Mes charges', href: '/charges', icone: Wallet },
   { nom: 'Emails', href: '/emails', icone: Mail },
+  { nom: 'Liens utiles', href: '/liens', icone: Link2 },
   { nom: 'Calendrier', href: '/calendrier', icone: Calendar },
   { nom: 'Paramètres', href: '/parametres', icone: Settings },
 ]

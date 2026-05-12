@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListTodo, Mail, Wallet, Plus } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Link2, Wallet, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
@@ -15,7 +15,7 @@ const navigation = [
   { nom: 'Accueil', href: '/dashboard', icone: LayoutDashboard },
   { nom: 'Tâches', href: '/taches', icone: ListTodo },
   { nom: 'Charges', href: '/charges', icone: Wallet },
-  { nom: 'Emails', href: '/emails', icone: Mail },
+  { nom: 'Liens', href: '/liens', icone: Link2 },
 ]
 
 export function BottomNav() {

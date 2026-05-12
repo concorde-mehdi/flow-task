@@ -44,6 +44,15 @@ export async function GET(request: NextRequest) {
 
   const charges = chargesData ?? []
 
+  const { data: liensData } = await supabase
+    .from('liens')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('consulte', false)
+    .order('created_at', { ascending: false })
+
+  const liensNonConsultes = liensData ?? []
+
   // Catégoriser les tâches
   const urgentes = taches.filter(t => {
     if (!t.deadline) return false
@@ -107,6 +116,7 @@ export async function GET(request: NextRequest) {
         <div class="stat"><div class="stat-num" style="color:#F97316">${enRetard.length}</div><div class="stat-label">En retard</div></div>
         <div class="stat"><div class="stat-num" style="color:#3B82F6">${taches.length}</div><div class="stat-label">À faire</div></div>
         <div class="stat"><div class="stat-num" style="color:#F59E0B">${charges.length}</div><div class="stat-label">Charges dues</div></div>
+        <div class="stat"><div class="stat-num" style="color:#8B5CF6">${liensNonConsultes.length}</div><div class="stat-label">Liens à voir</div></div>
       </div>
 
       <div class="section">
@@ -140,6 +150,12 @@ export async function GET(request: NextRequest) {
         <div class="section-title">Charges en attente</div>
         ${charges.slice(0, 5).map(c => `<div class="item item-charge"><div class="item-title">${c.titre}</div><div class="item-meta">${Number(c.montant).toLocaleString('fr-TN', { minimumFractionDigits: 3 })} DT${c.date_echeance ? ` — Échéance : ${format(parseISO(c.date_echeance), 'd MMM yyyy', { locale: fr })}` : ''}</div></div>`).join('')}
       </div>` : ''}
+
+      ${liensNonConsultes.length > 0 ? `
+      <div class="section">
+        <div class="section-title">Liens à consulter (${liensNonConsultes.length})</div>
+        ${liensNonConsultes.slice(0, 5).map(l => `<div class="item" style="background:#F5F3FF;border-left:3px solid #8B5CF6"><div class="item-title"><a href="${l.url}" style="color:#7C3AED;text-decoration:none">${l.titre}</a></div><div class="item-meta">${l.categorie}${l.notes ? ` — ${l.notes}` : ''}</div></div>`).join('')}
+      </div>` : ''}
     </div>
     <div class="footer">FlowTask — ${format(maintenant, "d MMMM yyyy 'à' HH'h'mm", { locale: fr })}</div>
   </div>
@@ -172,6 +188,7 @@ export async function GET(request: NextRequest) {
       urgentes: urgentes.length,
       enRetard: enRetard.length,
       charges: charges.length,
+      liensNonConsultes: liensNonConsultes.length,
     }
   })
 }

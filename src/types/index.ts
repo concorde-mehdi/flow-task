@@ -53,3 +53,24 @@ export interface Charge {
 }
 
 export type NouvelleCharge = Omit<Charge, 'id' | 'user_id' | 'created_at'>
+
+export interface Profil {
+  user_id: string
+  titre_poste: string
+  updated_at: string
+}
+
+export interface Lien {
+  id: string
+  user_id: string
+  titre: string
+  url: string
+  categorie: string
+  consulte: boolean
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauLien = Omit<Lien, 'id' | 'user_id' | 'created_at'>
+
+export const CATEGORIES_LIENS = ['Documentation', 'Outils IT', 'Formation', 'Ressources clinique', 'Fournisseurs'] as const

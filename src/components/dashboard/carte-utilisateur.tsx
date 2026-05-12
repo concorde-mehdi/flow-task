@@ -8,9 +8,21 @@ import type { User } from '@supabase/supabase-js'
 
 export function CarteUtilisateur() {
   const [user, setUser] = useState<User | null>(null)
+  const [titrePoste, setTitrePoste] = useState<string | null>(null)
 
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => setUser(data.user))
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data }) => {
+      setUser(data.user)
+      if (data.user) {
+        const { data: profil } = await supabase
+          .from('profils')
+          .select('titre_poste')
+          .eq('user_id', data.user.id)
+          .single()
+        if (profil) setTitrePoste(profil.titre_poste)
+      }
+    })
   }, [])
 
   const nomComplet = user?.user_metadata?.full_name ?? ''
@@ -35,6 +47,9 @@ export function CarteUtilisateur() {
         <p className="font-semibold text-gray-900 dark:text-white truncate">
           Bonjour, {nomComplet || prenom}
         </p>
+        {titrePoste && (
+          <p className="text-xs font-medium text-blue-500 dark:text-blue-400 truncate">{titrePoste}</p>
+        )}
         <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{dateFormatee}</p>
       </div>
     </div>
