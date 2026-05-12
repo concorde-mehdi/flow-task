@@ -8,16 +8,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const token = searchParams.get('token')
 
-  if (token !== process.env.RESUME_EMAIL_SECRET) {
-    return NextResponse.json({
-      error: 'Non autorisé',
-      debug: {
-        tokenRecu: token ? token.substring(0, 6) + '...' : 'absent',
-        envVarDefinie: !!process.env.RESUME_EMAIL_SECRET,
-        envVarLongueur: process.env.RESUME_EMAIL_SECRET?.length ?? 0,
-        envVarDebut: process.env.RESUME_EMAIL_SECRET ? process.env.RESUME_EMAIL_SECRET.substring(0, 6) + '...' : 'vide',
-      }
-    }, { status: 401 })
+  if (token !== process.env.RESUME_EMAIL_SECRET?.trim()) {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
   const userId = process.env.RESUME_USER_ID
