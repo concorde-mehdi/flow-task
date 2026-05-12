@@ -130,3 +130,7 @@
 
 /* Safe area pour mobile */
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Scrollbar invisible (bottom nav mobile) */
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }

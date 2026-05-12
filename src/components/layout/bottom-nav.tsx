@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListTodo, Link2, Wallet, Plus } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Link2, Wallet, Plus, Mail, Calendar, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
@@ -16,6 +16,9 @@ const navigation = [
   { nom: 'Tâches', href: '/taches', icone: ListTodo },
   { nom: 'Charges', href: '/charges', icone: Wallet },
   { nom: 'Liens', href: '/liens', icone: Link2 },
+  { nom: 'Emails', href: '/emails', icone: Mail },
+  { nom: 'Calendrier', href: '/calendrier', icone: Calendar },
+  { nom: 'Paramètres', href: '/parametres', icone: Settings },
 ]
 
 export function BottomNav() {
@@ -52,8 +55,8 @@ export function BottomNav() {
       </button>
 
       {/* Barre de navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 px-2 pb-safe z-50">
-        <div className="flex items-center justify-around">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-safe z-50">
+        <div className="flex items-center overflow-x-auto scrollbar-none">
           {navigation.map((item) => {
             const estActif = pathname.startsWith(item.href)
             return (
@@ -61,14 +64,14 @@ export function BottomNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-3 text-xs font-medium transition-colors',
+                  'flex flex-col items-center gap-1 px-4 py-3 text-xs font-medium transition-colors shrink-0',
                   estActif
                     ? 'text-blue-600 dark:text-blue-400'
                     : 'text-gray-500 dark:text-gray-400'
                 )}
               >
                 <item.icone size={20} />
-                <span>{item.nom}</span>
+                <span className="whitespace-nowrap">{item.nom}</span>
               </Link>
             )
           })}
