@@ -11,7 +11,7 @@ import { StatsBar } from '@/components/dashboard/stats-bar'
 import { CarteUtilisateur } from '@/components/dashboard/carte-utilisateur'
 import { AjoutRapide } from '@/components/dashboard/ajout-rapide'
 import { WidgetCharges } from '@/components/dashboard/widget-charges'
-import { WidgetLiens } from '@/components/dashboard/widget-liens'
+import { WidgetLiensRaccourcis } from '@/components/dashboard/widget-liens-raccourcis'
 import { WidgetMeteo } from '@/components/dashboard/widget-meteo'
 import { WidgetEmailsRecents } from '@/components/dashboard/widget-emails-recents'
 import { WidgetNotes } from '@/components/dashboard/widget-notes'
@@ -81,11 +81,11 @@ export default function PageDashboard() {
           {/* Statistiques */}
           <StatsBar />
 
-          {/* Charges + Liens */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <WidgetCharges />
-            <WidgetLiens />
-          </div>
+          {/* Raccourcis / Liens */}
+          <WidgetLiensRaccourcis />
+
+          {/* Charges */}
+          <WidgetCharges />
 
           {/* Priorité du jour + Activité récente */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
