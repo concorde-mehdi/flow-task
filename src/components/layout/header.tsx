@@ -3,9 +3,10 @@
 import { ThemeToggle } from './theme-toggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { CommandPalette } from '@/components/ui/command-palette'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { LogOut, User, CheckSquare } from 'lucide-react'
+import { LogOut, User, CheckSquare, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
@@ -17,10 +18,22 @@ export function Header({ titre }: HeaderProps) {
   const router = useRouter()
   const [utilisateur, setUtilisateur] = useState<SupabaseUser | null>(null)
   const [logoError, setLogoError] = useState(false)
+  const [paletteOuverte, setPaletteOuverte] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUtilisateur(data.user))
+  }, [])
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setPaletteOuverte(true)
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
   }, [])
 
   async function seDeconnecter() {
@@ -37,6 +50,7 @@ export function Header({ titre }: HeaderProps) {
     .slice(0, 2) ?? '?'
 
   return (
+    <>
     <header className="h-16 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-6">
       {/* Mobile : logo clinique */}
       <div className="flex items-center md:hidden">
@@ -60,6 +74,21 @@ export function Header({ titre }: HeaderProps) {
       <h1 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white">{titre}</h1>
 
       <div className="flex items-center gap-3">
+        {/* Bouton recherche */}
+        <button
+          onClick={() => setPaletteOuverte(true)}
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-700 hover:text-gray-600 dark:hover:text-gray-300 transition-all"
+        >
+          <Search className="w-3.5 h-3.5" />
+          Rechercher…
+          <kbd className="ml-1 text-gray-300 dark:text-gray-600 font-mono">Ctrl K</kbd>
+        </button>
+        <button
+          onClick={() => setPaletteOuverte(true)}
+          className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        >
+          <Search className="w-4 h-4" />
+        </button>
         <ThemeToggle />
 
         <DropdownMenu>
@@ -90,5 +119,8 @@ export function Header({ titre }: HeaderProps) {
         </DropdownMenu>
       </div>
     </header>
+
+    <CommandPalette ouvert={paletteOuverte} onFermer={() => setPaletteOuverte(false)} />
+  </>
   )
 }

@@ -8,6 +8,15 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 
+const COULEURS_GRILLE = [
+  'bg-sky-50 dark:bg-sky-950/40 border-sky-100 dark:border-sky-900/40 text-sky-600 dark:text-sky-400',
+  'bg-blue-50 dark:bg-blue-950/40 border-blue-100 dark:border-blue-900/40 text-blue-600 dark:text-blue-400',
+  'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-100 dark:border-indigo-900/40 text-indigo-600 dark:text-indigo-400',
+  'bg-violet-50 dark:bg-violet-950/40 border-violet-100 dark:border-violet-900/40 text-violet-600 dark:text-violet-400',
+  'bg-teal-50 dark:bg-teal-950/40 border-teal-100 dark:border-teal-900/40 text-teal-600 dark:text-teal-400',
+  'bg-cyan-50 dark:bg-cyan-950/40 border-cyan-100 dark:border-cyan-900/40 text-cyan-600 dark:text-cyan-400',
+]
+
 export function WidgetRaccourcis() {
   const { data: raccourcis = [], isLoading } = useRaccourcis()
   const { mutate: creer, isPending: creation } = useCreerRaccourci()
@@ -79,37 +88,42 @@ export function WidgetRaccourcis() {
       )}
 
       {isLoading ? (
-        <div className="space-y-2">
-          {[...Array(2)].map((_, i) => <div key={i} className="h-9 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />)}
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />)}
         </div>
       ) : raccourcis.length === 0 ? (
         <p className="text-xs text-gray-400 dark:text-gray-600">
           Aucun raccourci. Ajoute un message pré-rempli pour l'envoyer en un clic.
         </p>
       ) : (
-        <div className="flex flex-wrap gap-2">
-          {raccourcis.map(r => (
-            <div key={r.id} className="group flex items-center gap-1 bg-gray-50 dark:bg-gray-800 hover:bg-sky-50 dark:hover:bg-sky-950/30 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 transition-colors">
-              <button
-                onClick={() => envoyer(r.id, r.message)}
-                disabled={envoi === r.id}
-                className="flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300"
-                title={r.message}
-              >
-                {envoi === r.id
-                  ? <Loader2 className="w-3 h-3 animate-spin text-sky-500" />
-                  : <Send className="w-3 h-3 text-sky-500" />
-                }
-                {r.titre}
-              </button>
-              <button
-                onClick={() => supprimer(r.id)}
-                className="ml-1 text-gray-300 hover:text-red-400 dark:text-gray-700 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-              >
-                <Trash2 className="w-3 h-3" />
-              </button>
-            </div>
-          ))}
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {raccourcis.map((r, i) => {
+            const couleur = COULEURS_GRILLE[i % COULEURS_GRILLE.length]
+            return (
+              <div key={r.id} className={`group relative rounded-xl border p-3 flex flex-col items-center gap-2 cursor-pointer transition-all hover:scale-[1.02] ${couleur}`}>
+                <button
+                  onClick={() => envoyer(r.id, r.message)}
+                  disabled={envoi === r.id}
+                  className="flex flex-col items-center gap-1.5 w-full"
+                  title={r.message}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/60 dark:bg-white/10 flex items-center justify-center">
+                    {envoi === r.id
+                      ? <Loader2 className="w-4 h-4 animate-spin" />
+                      : <Send className="w-4 h-4" />
+                    }
+                  </div>
+                  <span className="text-xs font-semibold text-center leading-tight line-clamp-2">{r.titre}</span>
+                </button>
+                <button
+                  onClick={() => supprimer(r.id)}
+                  className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-current/40 hover:text-red-400"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
