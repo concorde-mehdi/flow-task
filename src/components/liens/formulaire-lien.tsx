@@ -51,6 +51,7 @@ export function FormulaireLien({ ouvert, onFermer, lienAModifier }: Props) {
       categorie,
       notes: notes.trim() || null,
       consulte,
+      is_raccourci: lienAModifier?.is_raccourci ?? false,
     }
 
     if (lienAModifier) {
