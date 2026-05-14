@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListTodo, Link2, Wallet, Plus, Mail, Calendar, Settings } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Link2, Wallet, Plus, Mail, Calendar, Settings, CalendarDays, FolderKanban } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
@@ -14,6 +14,8 @@ import { useCreerTache } from '@/hooks/use-taches'
 const navigation = [
   { nom: 'Accueil', href: '/dashboard', icone: LayoutDashboard },
   { nom: 'Tâches', href: '/taches', icone: ListTodo },
+  { nom: 'Réunions', href: '/reunions', icone: CalendarDays },
+  { nom: 'Projets', href: '/projets', icone: FolderKanban },
   { nom: 'Charges', href: '/charges', icone: Wallet },
   { nom: 'Liens', href: '/liens', icone: Link2 },
   { nom: 'Emails', href: '/emails', icone: Mail },

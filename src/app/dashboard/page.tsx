@@ -18,6 +18,8 @@ import { WidgetNotes } from '@/components/dashboard/widget-notes'
 import { WidgetRaccourcis } from '@/components/dashboard/widget-raccourcis'
 import { WidgetActivite } from '@/components/dashboard/widget-activite'
 import { WidgetPrioriteJour } from '@/components/dashboard/widget-priorite'
+import { WidgetReunions } from '@/components/dashboard/widget-reunions'
+import { WidgetProjets } from '@/components/dashboard/widget-projets'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { SqueletteListe } from '@/components/taches/squelette-tache'
@@ -68,6 +70,12 @@ export default function PageDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <WidgetMeteo />
             <WidgetEmailsRecents />
+          </div>
+
+          {/* Réunions à venir + Projets actifs */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <WidgetReunions />
+            <WidgetProjets />
           </div>
 
           {/* Statistiques */}
