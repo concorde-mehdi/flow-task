@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Plus, ArrowRight, Link2 } from 'lucide-react'
+import { Plus, ArrowRight, Link2, Pin } from 'lucide-react'
 import { useLiens, useMarquerConsulte } from '@/hooks/use-liens'
 
 const COULEURS = [
@@ -62,7 +62,8 @@ export function WidgetLiensRaccourcis() {
     marquerConsulte(id)
   }
 
-  const raccourcis = liens.slice(0, 9)
+  const raccourcis = liens.filter(l => l.is_raccourci).slice(0, 9)
+  const aDesRaccourcis = raccourcis.length > 0
 
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5">
@@ -71,7 +72,12 @@ export function WidgetLiensRaccourcis() {
           <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center">
             <Link2 className="w-4 h-4 text-blue-500" />
           </div>
-          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Raccourcis / Liens</p>
+          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Raccourcis</p>
+          {aDesRaccourcis && (
+            <span className="text-xs text-gray-400 dark:text-gray-600 font-medium">
+              {raccourcis.length}
+            </span>
+          )}
         </div>
         <Link href="/liens" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors">
           Gérer <ArrowRight className="w-3 h-3" />
@@ -80,20 +86,24 @@ export function WidgetLiensRaccourcis() {
 
       {isLoading ? (
         <div className="grid grid-cols-5 sm:grid-cols-6 gap-4">
-          {[...Array(9)].map((_, i) => (
+          {[...Array(6)].map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
               <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
               <div className="h-2.5 w-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
             </div>
           ))}
         </div>
-      ) : liens.length === 0 ? (
-        <div className="flex flex-col items-center py-4 gap-3">
-          <p className="text-xs text-gray-400 dark:text-gray-600 text-center">
-            Aucun lien enregistré. Ajoute tes sites fréquents.
-          </p>
+      ) : !aDesRaccourcis ? (
+        <div className="flex flex-col items-center py-5 gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+            <Pin className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+          </div>
+          <div className="text-center">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Aucun raccourci épinglé</p>
+            <p className="text-xs text-gray-400 dark:text-gray-600 mt-0.5">Épingle tes sites depuis la page Liens</p>
+          </div>
           <Link href="/liens" className="flex items-center gap-1.5 text-xs font-medium text-blue-500 hover:text-blue-600 transition-colors">
-            <Plus className="w-3.5 h-3.5" />Ajouter un lien
+            <Plus className="w-3.5 h-3.5" />Gérer les liens
           </Link>
         </div>
       ) : (

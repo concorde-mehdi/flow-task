@@ -79,6 +79,30 @@ export function useSupprimerLien() {
   })
 }
 
+export function useEpinglerLien() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, is_raccourci }: { id: string; is_raccourci: boolean }) => {
+      const supabase = createClient()
+      const { error } = await supabase.from('liens').update({ is_raccourci }).eq('id', id)
+      if (error) throw error
+    },
+    onMutate: async ({ id, is_raccourci }) => {
+      await queryClient.cancelQueries({ queryKey: ['liens'] })
+      const precedent = queryClient.getQueryData<Lien[]>(['liens'])
+      queryClient.setQueryData<Lien[]>(['liens'], old =>
+        old?.map(l => l.id === id ? { ...l, is_raccourci } : l) ?? []
+      )
+      return { precedent }
+    },
+    onError: (_err, _vars, ctx) => {
+      queryClient.setQueryData(['liens'], ctx?.precedent)
+      toast.error('Erreur')
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['liens'] }),
+  })
+}
+
 export function useMarquerConsulte() {
   const queryClient = useQueryClient()
   return useMutation({

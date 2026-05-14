@@ -1,9 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ExternalLink, Trash2, Pencil, CheckCircle2 } from 'lucide-react'
+import { ExternalLink, Trash2, Pencil, CheckCircle2, Pin, PinOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useSupprimerLien, useMarquerConsulte } from '@/hooks/use-liens'
+import { useSupprimerLien, useMarquerConsulte, useEpinglerLien } from '@/hooks/use-liens'
 import type { Lien } from '@/types'
 
 const COULEURS_CAT: Record<string, string> = {
@@ -22,6 +22,7 @@ interface Props {
 export function CarteLien({ lien, onModifier }: Props) {
   const { mutate: supprimer } = useSupprimerLien()
   const { mutate: marquerConsulte } = useMarquerConsulte()
+  const { mutate: epingler } = useEpinglerLien()
 
   function ouvrir() {
     window.open(lien.url, '_blank', 'noopener,noreferrer')
@@ -42,9 +43,9 @@ export function CarteLien({ lien, onModifier }: Props) {
       {/* Icône consulté */}
       <div className="shrink-0 mt-0.5">
         {lien.consulte ? (
-          <CheckCircle2 className="w-4.5 h-4.5 text-green-500" />
+          <CheckCircle2 className="w-4 h-4 text-green-500" />
         ) : (
-          <div className="w-4.5 h-4.5 rounded-full border-2 border-gray-200 dark:border-gray-700" />
+          <div className="w-4 h-4 rounded-full border-2 border-gray-200 dark:border-gray-700" />
         )}
       </div>
 
@@ -55,14 +56,14 @@ export function CarteLien({ lien, onModifier }: Props) {
             {lien.titre}
           </p>
           <div className="flex items-center gap-1 shrink-0">
+            {lien.is_raccourci && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-medium flex items-center gap-1">
+                <Pin className="w-2.5 h-2.5" />Raccourci
+              </span>
+            )}
             <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', couleurCat)}>
               {lien.categorie}
             </span>
-            {!lien.consulte && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 font-medium">
-                Non consulté
-              </span>
-            )}
           </div>
         </div>
 
@@ -83,6 +84,18 @@ export function CarteLien({ lien, onModifier }: Props) {
 
       {/* Actions */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+        <button
+          onClick={() => epingler({ id: lien.id, is_raccourci: !lien.is_raccourci })}
+          className={cn(
+            'transition-colors p-1 rounded',
+            lien.is_raccourci
+              ? 'text-blue-500 hover:text-blue-600'
+              : 'text-gray-300 hover:text-blue-500 dark:text-gray-700 dark:hover:text-blue-400'
+          )}
+          title={lien.is_raccourci ? 'Retirer du dashboard' : 'Épingler sur le dashboard'}
+        >
+          {lien.is_raccourci ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+        </button>
         <button
           onClick={() => onModifier?.(lien)}
           className="text-gray-300 hover:text-blue-500 dark:text-gray-700 dark:hover:text-blue-400 transition-colors p-1"

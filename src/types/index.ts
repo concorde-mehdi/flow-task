@@ -67,6 +67,7 @@ export interface Lien {
   url: string
   categorie: string
   consulte: boolean
+  is_raccourci: boolean
   notes: string | null
   created_at: string
 }
