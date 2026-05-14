@@ -79,13 +79,13 @@ export function Header({ titre, estDashboard }: HeaderProps) {
     <>
       <header className={`border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-6 ${estDashboard ? 'py-4' : 'h-16'}`}>
 
-        {/* Mobile : logo */}
+        {/* Mobile : logo (centré) */}
         <div className="flex items-center md:hidden">
           {!logoError ? (
             <img
               src="/logo-clinique.png"
               alt="Logo"
-              className="h-8 w-auto max-w-[130px] object-contain"
+              className="h-8 w-auto max-w-[140px] object-contain"
               onError={() => setLogoError(true)}
             />
           ) : (
@@ -93,7 +93,7 @@ export function Header({ titre, estDashboard }: HeaderProps) {
               <div className="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center shadow-sm">
                 <CheckSquare className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold text-gray-900 dark:text-white">FlowTask</span>
+              <span className="font-bold text-gray-900 dark:text-white text-sm">Clinique Concorde</span>
             </div>
           )}
         </div>
@@ -137,7 +137,7 @@ export function Header({ titre, estDashboard }: HeaderProps) {
             className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title="Tâches urgentes"
           >
-            <Bell className="w-4.5 h-4.5" size={18} />
+            <Bell size={18} />
             {urgentes.length > 0 && (
               <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
                 {urgentes.length > 9 ? '9+' : urgentes.length}
@@ -151,7 +151,7 @@ export function Header({ titre, estDashboard }: HeaderProps) {
             className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title="Emails non lus"
           >
-            <MessageSquare className="w-4.5 h-4.5" size={18} />
+            <MessageSquare size={18} />
             {emailsNonLus > 0 && (
               <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
                 {emailsNonLus > 9 ? '9+' : emailsNonLus}

@@ -22,6 +22,7 @@ import { WidgetAgendaJour } from '@/components/dashboard/widget-agenda-jour'
 import { WidgetDocumentsRecents } from '@/components/dashboard/widget-documents-recents'
 import { WidgetConnexionsDashboard } from '@/components/dashboard/widget-connexions-dashboard'
 import { WidgetStockMateriel } from '@/components/dashboard/widget-stock-materiel'
+import { MobileDashboard } from '@/components/dashboard/mobile-dashboard'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { SqueletteListe } from '@/components/taches/squelette-tache'
@@ -64,7 +65,13 @@ export default function PageDashboard() {
       <div className="flex-1 flex flex-col min-w-0">
         <Header titre="Tableau de bord" estDashboard />
 
-        <main className="flex-1 p-5 pb-24 md:pb-6 space-y-5 max-w-[1400px] mx-auto w-full">
+        {/* ══ MOBILE LAYOUT ══ */}
+        <div className="md:hidden flex-1 p-4 pb-32 space-y-4 overflow-y-auto">
+          <MobileDashboard onOuvrirPalette={() => {}} />
+        </div>
+
+        {/* ══ DESKTOP LAYOUT ══ */}
+        <main className="hidden md:block flex-1 p-5 pb-6 space-y-5 max-w-[1400px] mx-auto w-full">
 
           {/* Stats bar */}
           <StatsBar />
