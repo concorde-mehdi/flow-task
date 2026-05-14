@@ -40,16 +40,24 @@ export function WidgetMeteo() {
 
   async function charger() {
     try {
+      // uv_index doit venir de hourly (pas disponible dans current)
       const res = await fetch(
-        'https://api.open-meteo.com/v1/forecast?latitude=35.8245&longitude=10.6346&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m,uv_index&timezone=Africa%2FTunis'
+        'https://api.open-meteo.com/v1/forecast' +
+        '?latitude=35.8245&longitude=10.6346' +
+        '&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m' +
+        '&hourly=uv_index' +
+        '&forecast_days=1' +
+        '&timezone=Africa%2FTunis'
       )
+      if (!res.ok) throw new Error('API error')
       const json = await res.json()
+      const heure = new Date().getHours()
       setMeteo({
         temperature: Math.round(json.current.temperature_2m),
         weathercode: json.current.weathercode,
         windspeed: Math.round(json.current.windspeed_10m),
         humidity: Math.round(json.current.relativehumidity_2m ?? 0),
-        uv: Math.round(json.current.uv_index ?? 0),
+        uv: Math.round(json.hourly?.uv_index?.[heure] ?? 0),
       })
     } catch {
       // silently fail
@@ -101,7 +109,6 @@ export function WidgetMeteo() {
             </div>
             <p className="text-sm text-white/80 mb-4">{WMO_LABEL[meteo.weathercode] ?? 'Conditions météo'}</p>
 
-            {/* Stats météo */}
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 text-center">
                 <Wind className="w-3.5 h-3.5 text-white/80 mx-auto mb-1" />

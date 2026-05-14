@@ -6,13 +6,23 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { CommandPalette } from '@/components/ui/command-palette'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { LogOut, User, CheckSquare, Search } from 'lucide-react'
+import { LogOut, User, CheckSquare, Search, Bell, MessageSquare } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { useTachesUrgentes } from '@/hooks/use-taches'
+import { useGmail } from '@/hooks/use-gmail'
 
 interface HeaderProps {
   titre: string
   estDashboard?: boolean
+}
+
+function salutation(prenom: string): string {
+  const h = new Date().getHours()
+  if (h >= 5 && h < 12) return `Bonjour, ${prenom} 👋`
+  if (h >= 12 && h < 18) return `Bon après-midi, ${prenom} ☀️`
+  if (h >= 18 && h < 22) return `Bonsoir, ${prenom} 🌆`
+  return `Bonne nuit, ${prenom} 🌙`
 }
 
 export function Header({ titre, estDashboard }: HeaderProps) {
@@ -23,11 +33,16 @@ export function Header({ titre, estDashboard }: HeaderProps) {
   const [paletteOuverte, setPaletteOuverte] = useState(false)
   const supabase = createClient()
 
+  const { data: urgentes = [] } = useTachesUrgentes()
+  const { emails = [] } = useGmail()
+  const emailsNonLus = emails.filter(e => !e.lu).length
+
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       setUtilisateur(data.user)
       if (data.user && estDashboard) {
-        const { data: profil } = await supabase.from('profils').select('titre_poste').eq('user_id', data.user.id).single()
+        const { data: profil } = await supabase
+          .from('profils').select('titre_poste').eq('user_id', data.user.id).single()
         if (profil) setTitrePoste(profil.titre_poste)
       }
     })
@@ -63,6 +78,7 @@ export function Header({ titre, estDashboard }: HeaderProps) {
   return (
     <>
       <header className={`border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-6 ${estDashboard ? 'py-4' : 'h-16'}`}>
+
         {/* Mobile : logo */}
         <div className="flex items-center md:hidden">
           {!logoError ? (
@@ -82,11 +98,11 @@ export function Header({ titre, estDashboard }: HeaderProps) {
           )}
         </div>
 
-        {/* Desktop : titre ou greeting dashboard */}
+        {/* Desktop : greeting dashboard ou titre simple */}
         {estDashboard ? (
           <div className="hidden md:block">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-              Bonjour, {prenom} 👋
+              {salutation(prenom)}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               Voici un aperçu complet de ton activité aujourd&apos;hui.
@@ -96,11 +112,13 @@ export function Header({ titre, estDashboard }: HeaderProps) {
           <h1 className="hidden md:block text-lg font-semibold text-gray-900 dark:text-white">{titre}</h1>
         )}
 
-        <div className="flex items-center gap-3">
-          {/* Bouton recherche */}
+        {/* Actions droite */}
+        <div className="flex items-center gap-1.5">
+
+          {/* Recherche */}
           <button
             onClick={() => setPaletteOuverte(true)}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-700 hover:text-gray-600 dark:hover:text-gray-300 transition-all"
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-700 hover:text-gray-600 dark:hover:text-gray-300 transition-all mr-1"
           >
             <Search className="w-3.5 h-3.5" />
             Rechercher…
@@ -108,16 +126,44 @@ export function Header({ titre, estDashboard }: HeaderProps) {
           </button>
           <button
             onClick={() => setPaletteOuverte(true)}
-            className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 transition-colors"
           >
             <Search className="w-4 h-4" />
           </button>
 
+          {/* Notif tâches urgentes */}
+          <button
+            onClick={() => router.push('/taches')}
+            className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            title="Tâches urgentes"
+          >
+            <Bell className="w-4.5 h-4.5" size={18} />
+            {urgentes.length > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+                {urgentes.length > 9 ? '9+' : urgentes.length}
+              </span>
+            )}
+          </button>
+
+          {/* Notif emails */}
+          <button
+            onClick={() => router.push('/emails')}
+            className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            title="Emails non lus"
+          >
+            <MessageSquare className="w-4.5 h-4.5" size={18} />
+            {emailsNonLus > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+                {emailsNonLus > 9 ? '9+' : emailsNonLus}
+              </span>
+            )}
+          </button>
+
           <ThemeToggle />
 
-          {/* Avatar + nom (dashboard uniquement, desktop) */}
+          {/* Nom + poste (dashboard desktop) */}
           {estDashboard && (
-            <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-gray-100 dark:border-gray-800">
+            <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-gray-100 dark:border-gray-800 ml-1">
               <div className="text-right">
                 <p className="text-xs font-semibold text-gray-900 dark:text-white leading-none">{nomComplet || prenom}</p>
                 {titrePoste && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{titrePoste}</p>}
@@ -125,8 +171,9 @@ export function Header({ titre, estDashboard }: HeaderProps) {
             </div>
           )}
 
+          {/* Avatar dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full ring-2 ring-transparent hover:ring-blue-200 dark:hover:ring-blue-800 transition-all outline-none">
+            <DropdownMenuTrigger className="rounded-full ring-2 ring-transparent hover:ring-blue-200 dark:hover:ring-blue-800 transition-all outline-none ml-1">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={utilisateur?.user_metadata?.avatar_url} />
                 <AvatarFallback className="bg-blue-500 text-white text-xs font-semibold">
