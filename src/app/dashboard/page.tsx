@@ -8,7 +8,6 @@ import { Header } from '@/components/layout/header'
 import { Sidebar } from '@/components/layout/sidebar'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { StatsBar } from '@/components/dashboard/stats-bar'
-import { CarteUtilisateur } from '@/components/dashboard/carte-utilisateur'
 import { AjoutRapide } from '@/components/dashboard/ajout-rapide'
 import { WidgetCharges } from '@/components/dashboard/widget-charges'
 import { WidgetLiensRaccourcis } from '@/components/dashboard/widget-liens-raccourcis'
@@ -17,9 +16,12 @@ import { WidgetEmailsRecents } from '@/components/dashboard/widget-emails-recent
 import { WidgetNotes } from '@/components/dashboard/widget-notes'
 import { WidgetRaccourcis } from '@/components/dashboard/widget-raccourcis'
 import { WidgetActivite } from '@/components/dashboard/widget-activite'
-import { WidgetPrioriteJour } from '@/components/dashboard/widget-priorite'
-import { WidgetReunions } from '@/components/dashboard/widget-reunions'
 import { WidgetProjets } from '@/components/dashboard/widget-projets'
+import { WidgetTachesJour } from '@/components/dashboard/widget-taches-jour'
+import { WidgetAgendaJour } from '@/components/dashboard/widget-agenda-jour'
+import { WidgetDocumentsRecents } from '@/components/dashboard/widget-documents-recents'
+import { WidgetConnexionsDashboard } from '@/components/dashboard/widget-connexions-dashboard'
+import { WidgetStockMateriel } from '@/components/dashboard/widget-stock-materiel'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { SqueletteListe } from '@/components/taches/squelette-tache'
@@ -60,41 +62,36 @@ export default function PageDashboard() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header titre="Tableau de bord" />
+        <Header titre="Tableau de bord" estDashboard />
 
-        <main className="flex-1 p-6 pb-24 md:pb-6 space-y-6 max-w-5xl mx-auto w-full">
-          {/* Carte utilisateur */}
-          <CarteUtilisateur />
+        <main className="flex-1 p-5 pb-24 md:pb-6 space-y-5 max-w-[1400px] mx-auto w-full">
 
-          {/* Météo + Emails récents */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <WidgetMeteo />
-            <WidgetEmailsRecents />
-          </div>
-
-          {/* Réunions à venir + Projets actifs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <WidgetReunions />
-            <WidgetProjets />
-          </div>
-
-          {/* Statistiques */}
+          {/* Stats bar */}
           <StatsBar />
 
-          {/* Raccourcis / Liens */}
-          <WidgetLiensRaccourcis />
-
-          {/* Charges */}
-          <WidgetCharges />
-
-          {/* Priorité du jour + Activité récente */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <WidgetPrioriteJour />
-            <WidgetActivite />
+          {/* Ligne 1 : Météo | Emails | Tâches du jour | Agenda */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <WidgetMeteo />
+            <WidgetEmailsRecents />
+            <WidgetTachesJour />
+            <WidgetAgendaJour />
           </div>
 
-          {/* Notes sticky colorées */}
-          <WidgetNotes />
+          {/* Ligne 2 : Projets | Connexions PC | Raccourcis/Liens | Documents récents */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <WidgetProjets />
+            <WidgetConnexionsDashboard />
+            <WidgetLiensRaccourcis />
+            <WidgetDocumentsRecents />
+          </div>
+
+          {/* Ligne 3 : Charges | Activité | Stock matériel | Notes */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <WidgetCharges />
+            <WidgetActivite />
+            <WidgetStockMateriel />
+            <WidgetNotes />
+          </div>
 
           {/* Raccourcis Telegram */}
           <WidgetRaccourcis />
@@ -173,12 +170,7 @@ export default function PageDashboard() {
 }
 
 function Section({
-  icone,
-  titre,
-  compte,
-  couleurBadge,
-  isLoading,
-  children
+  icone, titre, compte, couleurBadge, isLoading, children
 }: {
   icone: React.ReactNode
   titre: string
@@ -188,23 +180,13 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-3"
-    >
+    <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
       <div className="flex items-center gap-2">
         {icone}
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{titre}</h2>
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${couleurBadge}`}>
-          {compte}
-        </span>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${couleurBadge}`}>{compte}</span>
       </div>
-      {isLoading ? (
-        <SqueletteListe count={2} />
-      ) : (
-        <div className="space-y-2">{children}</div>
-      )}
+      {isLoading ? <SqueletteListe count={2} /> : <div className="space-y-2">{children}</div>}
     </motion.section>
   )
 }
