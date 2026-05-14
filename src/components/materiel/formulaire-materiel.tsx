@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCreerMateriel, useModifierMateriel } from '@/hooks/use-materiel'
 import type { Materiel, NouveauMateriel, StatutMateriel } from '@/types'
+import { CATEGORIES_MATERIEL } from '@/types'
 
 interface Props {
   ouvert: boolean
@@ -22,6 +23,7 @@ export function FormulaireMateriel({ ouvert, onFermer, materielAModifier }: Prop
   const [titre, setTitre] = useState('')
   const [quantite, setQuantite] = useState('1')
   const [statut, setStatut] = useState<StatutMateriel>('commande')
+  const [categorie, setCategorie] = useState('Général')
   const [fournisseur, setFournisseur] = useState('')
   const [dateCommande, setDateCommande] = useState('')
   const [dateLivraison, setDateLivraison] = useState('')
@@ -32,12 +34,13 @@ export function FormulaireMateriel({ ouvert, onFermer, materielAModifier }: Prop
       setTitre(materielAModifier.titre)
       setQuantite(String(materielAModifier.quantite))
       setStatut(materielAModifier.statut)
+      setCategorie(materielAModifier.categorie ?? 'Général')
       setFournisseur(materielAModifier.fournisseur ?? '')
       setDateCommande(materielAModifier.date_commande ?? '')
       setDateLivraison(materielAModifier.date_livraison_prevue ?? '')
       setNotes(materielAModifier.notes ?? '')
     } else {
-      setTitre(''); setQuantite('1'); setStatut('commande')
+      setTitre(''); setQuantite('1'); setStatut('commande'); setCategorie('Général')
       setFournisseur(''); setDateCommande(''); setDateLivraison(''); setNotes('')
     }
   }, [materielAModifier, ouvert])
@@ -48,6 +51,7 @@ export function FormulaireMateriel({ ouvert, onFermer, materielAModifier }: Prop
       titre: titre.trim(),
       quantite: parseInt(quantite) || 1,
       statut,
+      categorie,
       fournisseur: fournisseur.trim() || null,
       date_commande: dateCommande || null,
       date_livraison_prevue: dateLivraison || null,
@@ -81,6 +85,16 @@ export function FormulaireMateriel({ ouvert, onFermer, materielAModifier }: Prop
                 <SelectItem value="en_panne">En panne</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Catégorie</label>
+            <select
+              value={categorie}
+              onChange={e => setCategorie(e.target.value)}
+              className="w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {CATEGORIES_MATERIEL.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
           <Input placeholder="Fournisseur" value={fournisseur} onChange={e => setFournisseur(e.target.value)} />
           <div className="flex gap-3">

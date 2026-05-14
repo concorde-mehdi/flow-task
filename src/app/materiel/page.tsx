@@ -14,8 +14,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Plus, Package, Truck, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Materiel, StatutMateriel } from '@/types'
+import { CATEGORIES_MATERIEL } from '@/types'
 
 type Filtre = 'tout' | StatutMateriel
+type VueMode = 'liste' | 'categorie'
 
 export default function PageMateriel() {
   useRequireAuth()
@@ -23,6 +25,7 @@ export default function PageMateriel() {
   const [formulaireOuvert, setFormulaireOuvert] = useState(false)
   const [materielAModifier, setMaterielAModifier] = useState<Materiel | null>(null)
   const [filtre, setFiltre] = useState<Filtre>('tout')
+  const [vue, setVue] = useState<VueMode>('liste')
 
   const commandes = materiel.filter(m => m.statut === 'commande').length
   const enLivraison = materiel.filter(m => m.statut === 'en_livraison').length
@@ -30,6 +33,13 @@ export default function PageMateriel() {
   const enPanne = materiel.filter(m => m.statut === 'en_panne').length
 
   const materielFiltre = materiel.filter(m => filtre === 'tout' || m.statut === filtre)
+
+  const parCategorie = CATEGORIES_MATERIEL.reduce((acc, cat) => {
+    const items = materielFiltre.filter(m => (m.categorie ?? 'Général') === cat)
+    if (items.length > 0) acc[cat] = items
+    return acc
+  }, {} as Record<string, Materiel[]>)
+  const sansCategorie = materielFiltre.filter(m => !CATEGORIES_MATERIEL.includes(m.categorie as never))
 
   const filtres: { label: string; valeur: Filtre }[] = [
     { label: 'Tout', valeur: 'tout' },
@@ -70,9 +80,15 @@ export default function PageMateriel() {
                   </button>
                 ))}
               </div>
-              <Button onClick={() => setFormulaireOuvert(true)} size="sm" className="gap-1.5 shrink-0">
-                <Plus className="w-4 h-4" />Ajouter
-              </Button>
+              <div className="flex items-center gap-2">
+                <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <button onClick={() => setVue('liste')} className={`text-xs px-2.5 py-1.5 font-medium transition-all ${vue === 'liste' ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`}>Liste</button>
+                  <button onClick={() => setVue('categorie')} className={`text-xs px-2.5 py-1.5 font-medium transition-all ${vue === 'categorie' ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`}>Catégorie</button>
+                </div>
+                <Button onClick={() => setFormulaireOuvert(true)} size="sm" className="gap-1.5 shrink-0">
+                  <Plus className="w-4 h-4" />Ajouter
+                </Button>
+              </div>
             </div>
 
             {isLoading ? (
@@ -82,7 +98,7 @@ export default function PageMateriel() {
                 <Package className="w-12 h-12 text-gray-200 dark:text-gray-800 mb-4" />
                 <p className="text-gray-400 dark:text-gray-600 text-sm">Aucun équipement</p>
               </div>
-            ) : (
+            ) : vue === 'liste' ? (
               <AnimatePresence mode="popLayout">
                 <motion.div className="space-y-3">
                   {materielFiltre.map(m => (
@@ -90,6 +106,34 @@ export default function PageMateriel() {
                   ))}
                 </motion.div>
               </AnimatePresence>
+            ) : (
+              <div className="space-y-6">
+                {Object.entries(parCategorie).map(([cat, items]) => (
+                  <section key={cat} className="space-y-2">
+                    <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide flex items-center gap-2">
+                      {cat}
+                      <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 normal-case tracking-normal">{items.length}</span>
+                    </h3>
+                    <AnimatePresence mode="popLayout">
+                      <motion.div className="space-y-2">
+                        {items.map(m => (
+                          <CarteMateriel key={m.id} item={m} onModifier={item => { setMaterielAModifier(item); setFormulaireOuvert(true) }} />
+                        ))}
+                      </motion.div>
+                    </AnimatePresence>
+                  </section>
+                ))}
+                {sansCategorie.length > 0 && (
+                  <section className="space-y-2">
+                    <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Non classé</h3>
+                    <motion.div className="space-y-2">
+                      {sansCategorie.map(m => (
+                        <CarteMateriel key={m.id} item={m} onModifier={item => { setMaterielAModifier(item); setFormulaireOuvert(true) }} />
+                      ))}
+                    </motion.div>
+                  </section>
+                )}
+              </div>
             )}
           </div>
         </main>

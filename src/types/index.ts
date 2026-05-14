@@ -112,6 +112,7 @@ export interface Materiel {
   titre: string
   quantite: number
   statut: StatutMateriel
+  categorie: string
   fournisseur: string | null
   date_commande: string | null
   date_livraison_prevue: string | null
@@ -120,6 +121,8 @@ export interface Materiel {
 }
 
 export type NouveauMateriel = Omit<Materiel, 'id' | 'user_id' | 'created_at'>
+
+export const CATEGORIES_MATERIEL = ['Général', 'Informatique', 'Réseau', 'Médical', 'Mobilier', 'Consommables', 'Sécurité'] as const
 
 export interface Raccourci {
   id: string
@@ -131,3 +134,74 @@ export interface Raccourci {
 }
 
 export type NouveauRaccourci = Omit<Raccourci, 'id' | 'user_id' | 'created_at'>
+
+export interface Reunion {
+  id: string
+  user_id: string
+  titre: string
+  date_heure: string
+  lieu: string | null
+  description: string | null
+  duree_minutes: number
+  created_at: string
+}
+
+export type NouvelleReunion = Omit<Reunion, 'id' | 'user_id' | 'created_at'>
+
+export interface Document {
+  id: string
+  user_id: string
+  titre: string
+  url: string
+  type: string
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauDocument = Omit<Document, 'id' | 'user_id' | 'created_at'>
+
+export const TYPES_DOCUMENTS = ['PDF', 'Word', 'Excel', 'PowerPoint', 'Image', 'Vidéo', 'Lien', 'Autre'] as const
+
+export interface ConnexionPC {
+  id: string
+  user_id: string
+  nom: string
+  ip: string
+  description: string | null
+  created_at: string
+}
+
+export type NouvelleConnexion = Omit<ConnexionPC, 'id' | 'user_id' | 'created_at'>
+
+export type StatutProjet = 'en_cours' | 'acheve'
+
+export interface Projet {
+  id: string
+  user_id: string
+  titre: string
+  statut: StatutProjet
+  avancement: number
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauProjet = Omit<Projet, 'id' | 'user_id' | 'created_at'>
+
+export interface Activite {
+  id: string
+  user_id: string
+  type: string
+  description: string
+  created_at: string
+}
+
+export type CouleurNote = 'yellow' | 'blue' | 'green' | 'pink' | 'purple'
+
+export interface StickyNote {
+  id: string
+  user_id: string
+  contenu: string
+  couleur: CouleurNote
+  created_at: string
+  updated_at: string
+}

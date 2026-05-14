@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Materiel, NouveauMateriel, StatutMateriel } from '@/types'
+import { logActivite } from '@/lib/activite'
 
 async function fetchMateriel(): Promise<Materiel[]> {
   const supabase = createClient()
@@ -33,9 +34,10 @@ export function useCreerMateriel() {
       if (error) throw error
       return data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['materiel'] })
       toast.success('Équipement ajouté !')
+      logActivite('materiel', `Équipement ajouté : ${data.titre}`)
     },
     onError: () => toast.error('Erreur lors de la création'),
   })

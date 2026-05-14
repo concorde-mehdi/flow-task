@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { Tache, NouvellesTache, FiltresTaches } from '@/types'
 import { estUrgente } from '@/lib/utils'
+import { logActivite } from '@/lib/activite'
 
 async function fetchTaches(): Promise<Tache[]> {
   const supabase = createClient()
@@ -86,9 +87,10 @@ export function useCreerTache() {
       queryClient.setQueryData(['taches'], ctx?.precedent)
       toast.error('Erreur lors de la création de la tâche')
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['taches'] })
       toast.success('Tâche créée !')
+      logActivite('tache', `Tâche créée : ${data.titre}`)
     },
   })
 }
@@ -161,6 +163,7 @@ export function useSupprimerTache() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['taches'] })
       toast.success('Tâche supprimée')
+      logActivite('tache', 'Tâche supprimée')
     },
   })
 }

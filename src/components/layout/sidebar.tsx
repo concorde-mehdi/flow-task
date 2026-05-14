@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare, Wallet, Mail, Link2, Users, FileText, Package } from 'lucide-react'
+import { LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare, Wallet, Mail, Link2, Users, FileText, Package, CalendarDays, FolderOpen, Monitor, FolderKanban } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
@@ -16,6 +16,10 @@ const navigation = [
   { nom: 'Annuaire', href: '/contacts', icone: Users },
   { nom: 'Devis', href: '/devis', icone: FileText },
   { nom: 'Matériel', href: '/materiel', icone: Package },
+  { nom: 'Réunions', href: '/reunions', icone: CalendarDays },
+  { nom: 'Documents', href: '/documents', icone: FolderOpen },
+  { nom: 'Connexions PC', href: '/connexions', icone: Monitor },
+  { nom: 'Projets', href: '/projets', icone: FolderKanban },
   { nom: 'Calendrier', href: '/calendrier', icone: Calendar },
   { nom: 'Paramètres', href: '/parametres', icone: Settings },
 ]

@@ -16,6 +16,8 @@ import { WidgetMeteo } from '@/components/dashboard/widget-meteo'
 import { WidgetEmailsRecents } from '@/components/dashboard/widget-emails-recents'
 import { WidgetNotes } from '@/components/dashboard/widget-notes'
 import { WidgetRaccourcis } from '@/components/dashboard/widget-raccourcis'
+import { WidgetActivite } from '@/components/dashboard/widget-activite'
+import { WidgetPrioriteJour } from '@/components/dashboard/widget-priorite'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
 import { SqueletteListe } from '@/components/taches/squelette-tache'
@@ -77,7 +79,13 @@ export default function PageDashboard() {
             <WidgetLiens />
           </div>
 
-          {/* Notes rapides */}
+          {/* Priorité du jour + Activité récente */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <WidgetPrioriteJour />
+            <WidgetActivite />
+          </div>
+
+          {/* Notes sticky colorées */}
           <WidgetNotes />
 
           {/* Raccourcis Telegram */}
