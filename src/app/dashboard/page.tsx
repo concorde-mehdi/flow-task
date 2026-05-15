@@ -22,6 +22,7 @@ import { WidgetAgendaJour } from '@/components/dashboard/widget-agenda-jour'
 import { WidgetDocumentsRecents } from '@/components/dashboard/widget-documents-recents'
 import { WidgetConnexionsDashboard } from '@/components/dashboard/widget-connexions-dashboard'
 import { WidgetStockMateriel } from '@/components/dashboard/widget-stock-materiel'
+import { WidgetCoffre } from '@/components/dashboard/widget-coffre'
 import { MobileDashboard } from '@/components/dashboard/mobile-dashboard'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
@@ -100,8 +101,11 @@ export default function PageDashboard() {
             <WidgetNotes />
           </div>
 
-          {/* Raccourcis Telegram */}
-          <WidgetRaccourcis />
+          {/* Coffre mots de passe + Raccourcis */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <WidgetCoffre />
+            <WidgetRaccourcis />
+          </div>
 
           {/* Ajout rapide */}
           <AjoutRapide onOuvrir={() => setFormulaireOuvert(true)} />

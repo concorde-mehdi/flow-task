@@ -206,3 +206,28 @@ export interface StickyNote {
   created_at: string
   updated_at: string
 }
+
+export type CategorieCoffre = 'Général' | 'Réseau' | 'Serveurs' | 'Applications' | 'Email' | 'Fournisseurs' | 'Personnel'
+
+export interface CoffreMdp {
+  id: string
+  user_id: string
+  titre: string
+  identifiant: string | null
+  mdp_chiffre: string
+  iv: string
+  sel: string
+  url: string | null
+  categorie: CategorieCoffre
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauCoffreMdp = {
+  titre: string
+  identifiant: string | null
+  mdp_clair: string
+  url: string | null
+  categorie: CategorieCoffre
+  notes: string | null
+}
