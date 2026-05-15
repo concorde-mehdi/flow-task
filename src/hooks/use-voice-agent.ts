@@ -14,7 +14,8 @@ export type EtatVoix = 'idle' | 'listening' | 'processing' | 'done' | 'error'
 export function useVoiceAgent() {
   const [etat, setEtat] = useState<EtatVoix>('idle')
   const [transcript, setTranscript] = useState('')
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null)
   const hasResultRef = useRef(false)
   const router = useRouter()
 
@@ -144,14 +145,16 @@ export function useVoiceAgent() {
     }
 
     hasResultRef.current = false
-    const recognition = new SR() as SpeechRecognition
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognition = new SR() as any
     recognition.lang = 'fr-FR'
     recognition.continuous = false
     recognition.interimResults = false
 
     recognition.onstart = () => setEtat('listening')
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
       hasResultRef.current = true
       const text = event.results[0]?.[0]?.transcript ?? ''
       if (text) traiterTranscript(text)
