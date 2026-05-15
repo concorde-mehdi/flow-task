@@ -40,9 +40,9 @@ export function WidgetReseau() {
   const { mutate: changerStatut } = useChangerStatutConnexion()
   const [rafraichissement, setRafraichissement] = useState(false)
 
-  const enLigne = connexions.filter(c => c.statut === 'en_ligne').length
-  const horsLigne = connexions.filter(c => c.statut === 'hors_ligne').length
-  const inconnu = connexions.filter(c => c.statut === 'inconnu').length
+  const enLigne = connexions.filter(c => (c.statut ?? 'inconnu') === 'en_ligne').length
+  const horsLigne = connexions.filter(c => (c.statut ?? 'inconnu') === 'hors_ligne').length
+  const inconnu = connexions.filter(c => !c.statut || c.statut === 'inconnu').length
 
   async function rafraichir() {
     setRafraichissement(true)
@@ -114,7 +114,7 @@ export function WidgetReseau() {
           <div className="space-y-2">
             <AnimatePresence>
               {connexions.map(c => {
-                const cfg = STATUT_CONFIG[c.statut ?? 'inconnu']
+                const cfg = STATUT_CONFIG[(c.statut ?? 'inconnu') as StatutReseau]
                 const Icone = cfg.icone
                 return (
                   <motion.div
@@ -127,7 +127,7 @@ export function WidgetReseau() {
                     {/* Dot pulse */}
                     <div className="relative shrink-0">
                       <div className={cn('w-2.5 h-2.5 rounded-full', cfg.dot)} />
-                      {c.statut === 'en_ligne' && (
+                      {(c.statut ?? 'inconnu') === 'en_ligne' && (
                         <div className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-40" />
                       )}
                     </div>
@@ -140,7 +140,7 @@ export function WidgetReseau() {
 
                     {/* Badge statut cliquable */}
                     <button
-                      onClick={() => toggleStatut(c.id, c.statut ?? 'inconnu')}
+                      onClick={() => toggleStatut(c.id, (c.statut ?? 'inconnu') as StatutReseau)}
                       className={cn(
                         'flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-lg transition-colors hover:opacity-80',
                         cfg.badge

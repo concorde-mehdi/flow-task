@@ -171,11 +171,15 @@ export interface ConnexionPC {
   nom: string
   ip: string
   description: string | null
-  statut: StatutReseau
+  statut?: StatutReseau
   created_at: string
 }
 
-export type NouvelleConnexion = Omit<ConnexionPC, 'id' | 'user_id' | 'created_at'>
+export type NouvelleConnexion = {
+  nom: string
+  ip: string
+  description: string | null
+}
 
 export type StatutProjet = 'en_cours' | 'acheve'
 
