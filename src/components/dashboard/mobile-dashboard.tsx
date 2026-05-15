@@ -7,15 +7,18 @@ import { useTaches } from '@/hooks/use-taches'
 import { useGmail } from '@/hooks/use-gmail'
 import { useReunions } from '@/hooks/use-reunions'
 import { useDocuments } from '@/hooks/use-documents'
+import { useChecklistItems, useChecklistCoches, useToggleCoche } from '@/hooks/use-checklist'
 import { estUrgente } from '@/lib/utils'
 import { isToday, format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import {
   ListTodo, AlertTriangle, Mail, CalendarDays,
   Search, Circle, ArrowRight, FileText, Plus,
+  CheckSquare, Square, ClipboardList, KeyRound, Lock,
 } from 'lucide-react'
 import { VoiceButton } from '@/components/ui/voice-button'
 import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
 
 /* ─── Salutation ─── */
 function salutation(prenom: string) {
@@ -80,6 +83,11 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
   const { emails = [] } = useGmail()
   const { data: reunions = [] } = useReunions()
   const { data: documents = [] } = useDocuments()
+  const { data: checkItems = [] } = useChecklistItems()
+  const { data: checkCoches = [] } = useChecklistCoches()
+  const { mutate: toggleCoche } = useToggleCoche()
+  const cochesSet = new Set(checkCoches.map(c => c.item_id))
+  const checkPct = checkItems.length === 0 ? 0 : Math.round((checkCoches.length / checkItems.length) * 100)
 
   /* Stats */
   const total = taches.length
@@ -169,6 +177,80 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
           </div>
         ))}
       </div>
+
+      {/* ── Checklist du jour (mobile) ── */}
+      {checkItems.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
+                <ClipboardList className="w-3.5 h-3.5 text-emerald-500" />
+              </div>
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Checklist du jour</h2>
+            </div>
+            <span className={cn(
+              'text-[10px] font-bold px-2 py-0.5 rounded-full',
+              checkPct === 100
+                ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400'
+                : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+            )}>
+              {checkCoches.length}/{checkItems.length}
+            </span>
+          </div>
+          {/* Barre progression */}
+          <div className="h-1.5 rounded-full bg-gray-100 dark:bg-gray-800 mb-3 overflow-hidden">
+            <motion.div
+              className={cn('h-full rounded-full', checkPct === 100 ? 'bg-emerald-500' : 'bg-indigo-500')}
+              initial={{ width: 0 }}
+              animate={{ width: `${checkPct}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+          {/* Items */}
+          <div className="space-y-1.5">
+            {checkItems.slice(0, 5).map(item => {
+              const estCoche = cochesSet.has(item.id)
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => toggleCoche({ itemId: item.id, estCoche })}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-colors',
+                    estCoche ? 'bg-emerald-50 dark:bg-emerald-950/20' : 'bg-gray-50 dark:bg-gray-800/50'
+                  )}
+                >
+                  <div className={cn('shrink-0', estCoche ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-600')}>
+                    {estCoche ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                  </div>
+                  <p className={cn('text-xs font-medium flex-1', estCoche ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-200')}>
+                    {item.titre}
+                  </p>
+                </div>
+              )
+            })}
+            {checkItems.length > 5 && (
+              <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center pt-1">
+                +{checkItems.length - 5} autres tâches
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Bouton coffre (mobile) ── */}
+      <Link
+        href="/dashboard"
+        className="flex items-center gap-3 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900"
+      >
+        <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/30">
+          <KeyRound className="w-5 h-5 text-white" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-gray-900 dark:text-white">Coffre — Mots de passe</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Accéder sur la version desktop</p>
+        </div>
+        <Lock className="w-4 h-4 text-indigo-400" />
+      </Link>
 
       {/* Agenda aujourd'hui */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">

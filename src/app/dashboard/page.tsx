@@ -76,6 +76,9 @@ export default function PageDashboard() {
         {/* ══ DESKTOP LAYOUT ══ */}
         <main className="hidden md:block flex-1 p-5 pb-6 space-y-5 max-w-[1400px] mx-auto w-full">
 
+          {/* Checklist du jour — en haut */}
+          <WidgetChecklist />
+
           {/* Stats bar */}
           <StatsBar />
 
@@ -103,15 +106,10 @@ export default function PageDashboard() {
             <WidgetNotes />
           </div>
 
-          {/* Checklist + État réseau */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            <WidgetChecklist />
-            <WidgetReseau />
-          </div>
-
-          {/* Coffre mots de passe + Raccourcis */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          {/* Coffre + État réseau + Raccourcis */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
             <WidgetCoffre />
+            <WidgetReseau />
             <WidgetRaccourcis />
           </div>
 

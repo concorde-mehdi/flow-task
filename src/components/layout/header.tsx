@@ -6,12 +6,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { CommandPalette } from '@/components/ui/command-palette'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { LogOut, User, CheckSquare, Search, Bell, MessageSquare } from 'lucide-react'
+import { LogOut, User, CheckSquare, Search, Bell, MessageSquare, ClipboardList } from 'lucide-react'
 import { VoiceButton } from '@/components/ui/voice-button'
 import { useEffect, useState } from 'react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { useTachesUrgentes } from '@/hooks/use-taches'
 import { useGmail } from '@/hooks/use-gmail'
+import { useChecklistItems, useChecklistCoches } from '@/hooks/use-checklist'
 
 interface HeaderProps {
   titre: string
@@ -37,6 +38,11 @@ export function Header({ titre, estDashboard }: HeaderProps) {
   const { data: urgentes = [] } = useTachesUrgentes()
   const { emails = [] } = useGmail()
   const emailsNonLus = emails.filter(e => !e.lu).length
+  const { data: checkItems = [] } = useChecklistItems()
+  const { data: checkCoches = [] } = useChecklistCoches()
+  const checkTotal = checkItems.length
+  const checkFait  = checkCoches.length
+  const checkRestant = checkTotal - checkFait
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -134,6 +140,26 @@ export function Header({ titre, estDashboard }: HeaderProps) {
 
           {/* Agent vocal */}
           <VoiceButton variant="icon" />
+
+          {/* Checklist du jour */}
+          {checkTotal > 0 && (
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              title={`Checklist : ${checkFait}/${checkTotal}`}
+            >
+              <ClipboardList size={18} />
+              {checkRestant > 0 ? (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-emerald-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+                  {checkRestant > 9 ? '9+' : checkRestant}
+                </span>
+              ) : checkTotal > 0 && (
+                <span className="absolute top-1 right-1 w-3 h-3 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-[8px]">✓</span>
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Notif tâches urgentes */}
           <button
