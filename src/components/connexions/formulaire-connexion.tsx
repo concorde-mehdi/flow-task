@@ -38,6 +38,7 @@ export function FormulaireConnexion({ ouvert, onFermer, connexionAModifier }: Pr
       nom: nom.trim(),
       ip: ip.trim(),
       description: description.trim() || null,
+      statut: 'inconnu',
     }
     if (connexionAModifier) {
       modifier({ id: connexionAModifier.id, ...connexion }, { onSuccess: onFermer })

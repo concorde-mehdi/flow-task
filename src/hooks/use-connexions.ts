@@ -57,6 +57,29 @@ export function useModifierConnexion() {
   })
 }
 
+export function useChangerStatutConnexion() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, statut }: { id: string; statut: string }) => {
+      const supabase = createClient()
+      const { error } = await supabase.from('connexions_pc').update({ statut }).eq('id', id)
+      if (error) throw error
+    },
+    onMutate: async ({ id, statut }) => {
+      await queryClient.cancelQueries({ queryKey: ['connexions'] })
+      const precedent = queryClient.getQueryData<ConnexionPC[]>(['connexions'])
+      queryClient.setQueryData<ConnexionPC[]>(['connexions'], old =>
+        old?.map(c => c.id === id ? { ...c, statut: statut as ConnexionPC['statut'] } : c) ?? []
+      )
+      return { precedent }
+    },
+    onError: (_err, _vars, ctx) => {
+      queryClient.setQueryData(['connexions'], ctx?.precedent)
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['connexions'] }),
+  })
+}
+
 export function useSupprimerConnexion() {
   const queryClient = useQueryClient()
   return useMutation({

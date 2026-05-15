@@ -23,6 +23,8 @@ import { WidgetDocumentsRecents } from '@/components/dashboard/widget-documents-
 import { WidgetConnexionsDashboard } from '@/components/dashboard/widget-connexions-dashboard'
 import { WidgetStockMateriel } from '@/components/dashboard/widget-stock-materiel'
 import { WidgetCoffre } from '@/components/dashboard/widget-coffre'
+import { WidgetChecklist } from '@/components/dashboard/widget-checklist'
+import { WidgetReseau } from '@/components/dashboard/widget-reseau'
 import { MobileDashboard } from '@/components/dashboard/mobile-dashboard'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
@@ -99,6 +101,12 @@ export default function PageDashboard() {
             <WidgetActivite />
             <WidgetStockMateriel />
             <WidgetNotes />
+          </div>
+
+          {/* Checklist + État réseau */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <WidgetChecklist />
+            <WidgetReseau />
           </div>
 
           {/* Coffre mots de passe + Raccourcis */}

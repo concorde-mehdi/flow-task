@@ -163,12 +163,15 @@ export type NouveauDocument = Omit<Document, 'id' | 'user_id' | 'created_at'>
 
 export const TYPES_DOCUMENTS = ['PDF', 'Word', 'Excel', 'PowerPoint', 'Image', 'Vidéo', 'Lien', 'Autre'] as const
 
+export type StatutReseau = 'en_ligne' | 'hors_ligne' | 'inconnu'
+
 export interface ConnexionPC {
   id: string
   user_id: string
   nom: string
   ip: string
   description: string | null
+  statut: StatutReseau
   created_at: string
 }
 
