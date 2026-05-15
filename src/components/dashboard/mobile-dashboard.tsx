@@ -83,7 +83,7 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
   const { emails = [] } = useGmail()
   const { data: reunions = [] } = useReunions()
   const { data: documents = [] } = useDocuments()
-  const { data: checkItems = [] } = useChecklistItems()
+  const { data: checkItems = [], isError: checkError } = useChecklistItems()
   const { data: checkCoches = [] } = useChecklistCoches()
   const { mutate: toggleCoche } = useToggleCoche()
   const cochesSet = new Set(checkCoches.map(c => c.item_id))
@@ -178,79 +178,85 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
         ))}
       </div>
 
-      {/* ── Checklist du jour (mobile) ── */}
-      {checkItems.length > 0 && (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
-                <ClipboardList className="w-3.5 h-3.5 text-emerald-500" />
-              </div>
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Checklist du jour</h2>
+      {/* ── Checklist + Coffre côte à côte (mobile) ── */}
+      <div className="grid grid-cols-2 gap-3">
+
+        {/* Checklist */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
+              <ClipboardList className="w-3 h-3 text-emerald-500" />
             </div>
-            <span className={cn(
-              'text-[10px] font-bold px-2 py-0.5 rounded-full',
-              checkPct === 100
-                ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400'
-                : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-            )}>
-              {checkCoches.length}/{checkItems.length}
-            </span>
-          </div>
-          {/* Barre progression */}
-          <div className="h-1.5 rounded-full bg-gray-100 dark:bg-gray-800 mb-3 overflow-hidden">
-            <motion.div
-              className={cn('h-full rounded-full', checkPct === 100 ? 'bg-emerald-500' : 'bg-indigo-500')}
-              initial={{ width: 0 }}
-              animate={{ width: `${checkPct}%` }}
-              transition={{ duration: 0.4 }}
-            />
-          </div>
-          {/* Items */}
-          <div className="space-y-1.5">
-            {checkItems.slice(0, 5).map(item => {
-              const estCoche = cochesSet.has(item.id)
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => toggleCoche({ itemId: item.id, estCoche })}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-colors',
-                    estCoche ? 'bg-emerald-50 dark:bg-emerald-950/20' : 'bg-gray-50 dark:bg-gray-800/50'
-                  )}
-                >
-                  <div className={cn('shrink-0', estCoche ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-600')}>
-                    {estCoche ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-                  </div>
-                  <p className={cn('text-xs font-medium flex-1', estCoche ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-200')}>
-                    {item.titre}
-                  </p>
-                </div>
-              )
-            })}
-            {checkItems.length > 5 && (
-              <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center pt-1">
-                +{checkItems.length - 5} autres tâches
-              </p>
+            <span className="text-xs font-bold text-gray-900 dark:text-white">Checklist</span>
+            {checkItems.length > 0 && (
+              <span className={cn('ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full',
+                checkPct === 100
+                  ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400'
+                  : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+              )}>
+                {checkCoches.length}/{checkItems.length}
+              </span>
             )}
           </div>
-        </div>
-      )}
 
-      {/* ── Bouton coffre (mobile) ── */}
-      <Link
-        href="/dashboard"
-        className="flex items-center gap-3 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900"
-      >
-        <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/30">
-          <KeyRound className="w-5 h-5 text-white" />
+          {checkError ? (
+            <p className="text-[10px] text-amber-500">SQL manquant</p>
+          ) : checkItems.length === 0 ? (
+            <p className="text-[10px] text-gray-400 dark:text-gray-600">Aucune tâche configurée</p>
+          ) : (
+            <>
+              <div className="h-1 rounded-full bg-gray-100 dark:bg-gray-800 mb-2 overflow-hidden">
+                <motion.div
+                  className={cn('h-full rounded-full', checkPct === 100 ? 'bg-emerald-500' : 'bg-indigo-400')}
+                  initial={{ width: 0 }} animate={{ width: `${checkPct}%` }} transition={{ duration: 0.4 }}
+                />
+              </div>
+              <div className="space-y-1">
+                {checkItems.slice(0, 4).map(item => {
+                  const estCoche = cochesSet.has(item.id)
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => toggleCoche({ itemId: item.id, estCoche })}
+                      className="flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <span className={cn('shrink-0', estCoche ? 'text-emerald-500' : 'text-gray-300 dark:text-gray-600')}>
+                        {estCoche ? <CheckSquare className="w-3 h-3" /> : <Square className="w-3 h-3" />}
+                      </span>
+                      <p className={cn('text-[10px] font-medium truncate', estCoche ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-200')}>
+                        {item.titre}
+                      </p>
+                    </div>
+                  )
+                })}
+                {checkItems.length > 4 && (
+                  <p className="text-[9px] text-gray-400 pt-0.5">+{checkItems.length - 4} autres</p>
+                )}
+              </div>
+            </>
+          )}
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-bold text-gray-900 dark:text-white">Coffre — Mots de passe</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Accéder sur la version desktop</p>
+
+        {/* Coffre */}
+        <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900 p-3 flex flex-col justify-between">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-6 h-6 rounded-lg bg-indigo-500 flex items-center justify-center shrink-0">
+              <KeyRound className="w-3 h-3 text-white" />
+            </div>
+            <span className="text-xs font-bold text-gray-900 dark:text-white">Coffre</span>
+          </div>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-3">
+            Mots de passe chiffrés AES-256
+          </p>
+          <Link
+            href="/dashboard"
+            className="flex items-center justify-center gap-1 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white text-[10px] font-bold transition-colors"
+          >
+            <Lock className="w-2.5 h-2.5" />
+            Ouvrir sur desktop
+          </Link>
         </div>
-        <Lock className="w-4 h-4 text-indigo-400" />
-      </Link>
+      </div>
 
       {/* Agenda aujourd'hui */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
