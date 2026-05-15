@@ -26,7 +26,7 @@ const SUGGESTIONS = [
 ]
 
 export function WidgetChecklist() {
-  const { data: items = [] } = useChecklistItems()
+  const { data: items = [], isError } = useChecklistItems()
   const { data: coches = [] } = useChecklistCoches()
   const { mutateAsync: ajouter } = useAjouterItem()
   const { mutateAsync: supprimer } = useSupprimerItem()
@@ -55,6 +55,18 @@ export function WidgetChecklist() {
     await ajouter(s)
     toast.success('Ajouté !')
   }
+
+  if (isError) return (
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 flex items-center gap-3">
+      <div className="w-7 h-7 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center shrink-0">
+        <ClipboardList className="w-3.5 h-3.5 text-emerald-500" />
+      </div>
+      <div>
+        <p className="text-xs font-bold text-gray-900 dark:text-white">Checklist du jour</p>
+        <p className="text-[10px] text-amber-500">Tables manquantes — exécuter le SQL dans Supabase</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
