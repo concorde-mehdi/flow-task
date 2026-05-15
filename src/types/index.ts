@@ -105,25 +105,23 @@ export interface Devis {
 
 export type NouveauDevis = Omit<Devis, 'id' | 'user_id' | 'created_at'>
 
-export type StatutMateriel = 'commande' | 'en_livraison' | 'livre' | 'en_panne'
-
 export interface Materiel {
   id: string
   user_id: string
   titre: string
-  quantite: number
-  statut: StatutMateriel
   categorie: string
-  fournisseur: string | null
-  date_commande: string | null
-  date_livraison_prevue: string | null
+  quantite_totale: number
+  quantite_active: number
+  quantite_reserve: number
+  quantite_panne: number
+  localisation: string | null
   notes: string | null
   created_at: string
 }
 
 export type NouveauMateriel = Omit<Materiel, 'id' | 'user_id' | 'created_at'>
 
-export const CATEGORIES_MATERIEL = ['Général', 'Informatique', 'Réseau', 'Médical', 'Mobilier', 'Consommables', 'Sécurité'] as const
+export const CATEGORIES_MATERIEL = ['PC', 'Serveur', 'Switch', 'Routeur', 'Imprimante', 'Écran', 'Téléphone', 'NAS', 'Autre'] as const
 
 export interface Raccourci {
   id: string

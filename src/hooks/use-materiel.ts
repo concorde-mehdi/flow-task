@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import type { Materiel, NouveauMateriel, StatutMateriel } from '@/types'
+import type { Materiel, NouveauMateriel } from '@/types'
 import { logActivite } from '@/lib/activite'
 
 async function fetchMateriel(): Promise<Materiel[]> {
@@ -11,7 +11,7 @@ async function fetchMateriel(): Promise<Materiel[]> {
   const { data, error } = await supabase
     .from('materiel')
     .select('*')
-    .order('created_at', { ascending: false })
+    .order('categorie', { ascending: true })
   if (error) throw error
   return data ?? []
 }
@@ -81,28 +81,5 @@ export function useSupprimerMateriel() {
       queryClient.invalidateQueries({ queryKey: ['materiel'] })
       toast.success('Équipement supprimé')
     },
-  })
-}
-
-export function useChangerStatutMateriel() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async ({ id, statut }: { id: string; statut: StatutMateriel }) => {
-      const supabase = createClient()
-      const { error } = await supabase.from('materiel').update({ statut }).eq('id', id)
-      if (error) throw error
-    },
-    onMutate: async ({ id, statut }) => {
-      await queryClient.cancelQueries({ queryKey: ['materiel'] })
-      const precedent = queryClient.getQueryData<Materiel[]>(['materiel'])
-      queryClient.setQueryData<Materiel[]>(['materiel'], old =>
-        old?.map(m => m.id === id ? { ...m, statut } : m) ?? []
-      )
-      return { precedent }
-    },
-    onError: (_err, _vars, ctx) => {
-      queryClient.setQueryData(['materiel'], ctx?.precedent)
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['materiel'] }),
   })
 }

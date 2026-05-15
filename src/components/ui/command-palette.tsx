@@ -88,9 +88,9 @@ export function CommandPalette({ ouvert, onFermer }: Props) {
       .slice(0, 3)
       .map(d => ({ id: d.id, type: 'devis' as const, titre: d.titre, sousTitre: d.entreprise ?? undefined, href: '/devis' })),
     ...materiel
-      .filter(m => m.titre.toLowerCase().includes(q) || m.fournisseur?.toLowerCase().includes(q))
+      .filter(m => m.titre.toLowerCase().includes(q) || m.categorie?.toLowerCase().includes(q))
       .slice(0, 3)
-      .map(m => ({ id: m.id, type: 'materiel' as const, titre: m.titre, sousTitre: m.fournisseur ?? undefined, href: '/materiel' })),
+      .map(m => ({ id: m.id, type: 'materiel' as const, titre: m.titre, sousTitre: m.localisation ?? m.categorie ?? undefined, href: '/materiel' })),
     ...connexions
       .filter(c => c.nom.toLowerCase().includes(q) || c.ip.includes(q))
       .slice(0, 3)

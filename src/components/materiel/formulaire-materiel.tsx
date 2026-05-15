@@ -3,11 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCreerMateriel, useModifierMateriel } from '@/hooks/use-materiel'
-import type { Materiel, NouveauMateriel, StatutMateriel } from '@/types'
+import type { Materiel, NouveauMateriel } from '@/types'
 import { CATEGORIES_MATERIEL } from '@/types'
 
 interface Props {
@@ -16,102 +13,108 @@ interface Props {
   materielAModifier?: Materiel | null
 }
 
+const VIDE: NouveauMateriel = {
+  titre: '',
+  categorie: 'PC',
+  quantite_totale: 1,
+  quantite_active: 1,
+  quantite_reserve: 0,
+  quantite_panne: 0,
+  localisation: null,
+  notes: null,
+}
+
 export function FormulaireMateriel({ ouvert, onFermer, materielAModifier }: Props) {
   const { mutate: creer, isPending: creation } = useCreerMateriel()
   const { mutate: modifier, isPending: modification } = useModifierMateriel()
-
-  const [titre, setTitre] = useState('')
-  const [quantite, setQuantite] = useState('1')
-  const [statut, setStatut] = useState<StatutMateriel>('commande')
-  const [categorie, setCategorie] = useState('Général')
-  const [fournisseur, setFournisseur] = useState('')
-  const [dateCommande, setDateCommande] = useState('')
-  const [dateLivraison, setDateLivraison] = useState('')
-  const [notes, setNotes] = useState('')
+  const [form, setForm] = useState<NouveauMateriel>(VIDE)
 
   useEffect(() => {
     if (materielAModifier) {
-      setTitre(materielAModifier.titre)
-      setQuantite(String(materielAModifier.quantite))
-      setStatut(materielAModifier.statut)
-      setCategorie(materielAModifier.categorie ?? 'Général')
-      setFournisseur(materielAModifier.fournisseur ?? '')
-      setDateCommande(materielAModifier.date_commande ?? '')
-      setDateLivraison(materielAModifier.date_livraison_prevue ?? '')
-      setNotes(materielAModifier.notes ?? '')
+      setForm({
+        titre: materielAModifier.titre,
+        categorie: materielAModifier.categorie,
+        quantite_totale: materielAModifier.quantite_totale,
+        quantite_active: materielAModifier.quantite_active,
+        quantite_reserve: materielAModifier.quantite_reserve,
+        quantite_panne: materielAModifier.quantite_panne,
+        localisation: materielAModifier.localisation,
+        notes: materielAModifier.notes,
+      })
     } else {
-      setTitre(''); setQuantite('1'); setStatut('commande'); setCategorie('Général')
-      setFournisseur(''); setDateCommande(''); setDateLivraison(''); setNotes('')
+      setForm(VIDE)
     }
   }, [materielAModifier, ouvert])
 
+  function set<K extends keyof NouveauMateriel>(key: K, val: NouveauMateriel[K]) {
+    setForm(f => ({ ...f, [key]: val }))
+  }
+
   function soumettre() {
-    if (!titre.trim()) return
-    const item: NouveauMateriel = {
-      titre: titre.trim(),
-      quantite: parseInt(quantite) || 1,
-      statut,
-      categorie,
-      fournisseur: fournisseur.trim() || null,
-      date_commande: dateCommande || null,
-      date_livraison_prevue: dateLivraison || null,
-      notes: notes.trim() || null,
+    if (!form.titre.trim()) return
+    const payload = {
+      ...form,
+      quantite_totale: form.quantite_active + form.quantite_reserve + form.quantite_panne,
     }
     if (materielAModifier) {
-      modifier({ id: materielAModifier.id, ...item }, { onSuccess: onFermer })
+      modifier({ id: materielAModifier.id, ...payload }, { onSuccess: onFermer })
     } else {
-      creer(item, { onSuccess: onFermer })
+      creer(payload, { onSuccess: onFermer })
     }
   }
 
   const enCours = creation || modification
+  const inputCls = 'w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 outline-none focus:ring-2 focus:ring-blue-400'
 
   return (
-    <Dialog open={ouvert} onOpenChange={(o) => !o && onFermer()}>
+    <Dialog open={ouvert} onOpenChange={o => !o && onFermer()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{materielAModifier ? 'Modifier l\'équipement' : 'Nouvel équipement'}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 py-2">
-          <Input placeholder="Nom de l'équipement *" value={titre} onChange={e => setTitre(e.target.value)} autoFocus />
-          <div className="flex gap-3">
-            <Input type="number" placeholder="Qté" value={quantite} onChange={e => setQuantite(e.target.value)} min="1" className="w-24" />
-            <Select value={statut} onValueChange={(v) => setStatut(v as StatutMateriel)}>
-              <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="commande">Commandé</SelectItem>
-                <SelectItem value="en_livraison">En livraison</SelectItem>
-                <SelectItem value="livre">Livré</SelectItem>
-                <SelectItem value="en_panne">En panne</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Catégorie</label>
-            <select
-              value={categorie}
-              onChange={e => setCategorie(e.target.value)}
-              className="w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+
+        <div className="space-y-4 py-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <input autoFocus value={form.titre} onChange={e => set('titre', e.target.value)}
+                placeholder="Nom de l'équipement *" className={inputCls} />
+            </div>
+            <select value={form.categorie} onChange={e => set('categorie', e.target.value)} className={inputCls}>
               {CATEGORIES_MATERIEL.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
+            <input value={form.localisation ?? ''} onChange={e => set('localisation', e.target.value || null)}
+              placeholder="Localisation" className={inputCls} />
           </div>
-          <Input placeholder="Fournisseur" value={fournisseur} onChange={e => setFournisseur(e.target.value)} />
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="text-xs text-gray-500 mb-1 block">Date commande</label>
-              <Input type="date" value={dateCommande} onChange={e => setDateCommande(e.target.value)} />
+
+          <div>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Quantités</p>
+            <div className="grid grid-cols-3 gap-3">
+              {([
+                { key: 'quantite_active' as const, label: 'Actifs', color: 'text-emerald-600 dark:text-emerald-400' },
+                { key: 'quantite_reserve' as const, label: 'Réserve', color: 'text-blue-600 dark:text-blue-400' },
+                { key: 'quantite_panne' as const, label: 'En panne', color: 'text-red-600 dark:text-red-400' },
+              ]).map(({ key, label, color }) => (
+                <div key={key} className="text-center">
+                  <label className={`text-[11px] font-medium block mb-1 ${color}`}>{label}</label>
+                  <input type="number" min={0} value={form[key]}
+                    onChange={e => set(key, Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full text-sm text-center border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-2 bg-white dark:bg-gray-900 outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              ))}
             </div>
-            <div className="flex-1">
-              <label className="text-xs text-gray-500 mb-1 block">Livraison prévue</label>
-              <Input type="date" value={dateLivraison} onChange={e => setDateLivraison(e.target.value)} />
-            </div>
+            <p className="text-[11px] text-gray-400 text-center mt-2">
+              Total : {form.quantite_active + form.quantite_reserve + form.quantite_panne} unité(s)
+            </p>
           </div>
-          <Textarea placeholder="Notes (optionnel)" value={notes} onChange={e => setNotes(e.target.value)} rows={2} />
+
+          <textarea value={form.notes ?? ''} onChange={e => set('notes', e.target.value || null)}
+            placeholder="Notes (optionnel)" rows={2} className={inputCls} />
         </div>
-        <div className="flex gap-3 pt-2">
+
+        <div className="flex gap-3 pt-1">
           <Button variant="outline" onClick={onFermer} className="flex-1" disabled={enCours}>Annuler</Button>
-          <Button onClick={soumettre} className="flex-1" disabled={!titre.trim() || enCours}>
+          <Button onClick={soumettre} className="flex-1" disabled={!form.titre.trim() || enCours}>
             {enCours ? 'Enregistrement…' : materielAModifier ? 'Modifier' : 'Ajouter'}
           </Button>
         </div>
