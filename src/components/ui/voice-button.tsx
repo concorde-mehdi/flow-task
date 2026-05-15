@@ -26,7 +26,7 @@ export function VoiceButton({ variant = 'icon', className }: VoiceButtonProps) {
     : 'Commande vocale'
 
   return (
-    <div className={cn('relative inline-flex items-center justify-center', className)}>
+    <div className={cn('relative inline-flex flex-col items-center justify-center', className)}>
       {/* Anneau pulse pendant l'écoute */}
       <AnimatePresence>
         {etat === 'listening' && (
@@ -93,6 +93,21 @@ export function VoiceButton({ variant = 'icon', className }: VoiceButtonProps) {
           )}
         </AnimatePresence>
       </button>
+
+      {/* Transcript capturé — affiché pendant processing pour debug */}
+      <AnimatePresence>
+        {etat === 'processing' && transcript && (
+          <motion.p
+            key="transcript"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute top-full mt-1.5 text-[10px] text-gray-500 dark:text-gray-400 whitespace-nowrap max-w-[180px] truncate text-center pointer-events-none"
+          >
+            {transcript}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

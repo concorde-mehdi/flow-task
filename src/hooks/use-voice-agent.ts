@@ -124,6 +124,7 @@ export function useVoiceAgent() {
   const traiterTranscript = useCallback(async (text: string) => {
     setTranscript(text)
     setEtat('processing')
+    toast.info(`🎤 "${text}"`, { duration: 4000, id: 'transcript' })
     try {
       const { action, params } = parseVoiceCommand(text)
       await dispatch(action, params)
