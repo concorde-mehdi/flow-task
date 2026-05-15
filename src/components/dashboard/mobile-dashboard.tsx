@@ -14,6 +14,7 @@ import {
   ListTodo, AlertTriangle, Mail, CalendarDays,
   Search, Circle, ArrowRight, FileText, Plus,
 } from 'lucide-react'
+import { VoiceButton } from '@/components/ui/voice-button'
 import { cn } from '@/lib/utils'
 
 /* ─── Salutation ─── */
@@ -141,12 +142,15 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
             Voici un aperçu rapide pour aujourd&apos;hui.
           </p>
         </div>
-        <button
-          onClick={onOuvrirPalette}
-          className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 transition-colors shrink-0 mt-1"
-        >
-          <Search className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2 mt-1">
+          <button
+            onClick={onOuvrirPalette}
+            className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 transition-colors shrink-0"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          <VoiceButton variant="icon" />
+        </div>
       </div>
 
       {/* Stats 2×2 */}

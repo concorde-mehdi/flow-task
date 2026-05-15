@@ -7,6 +7,7 @@ import { CommandPalette } from '@/components/ui/command-palette'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { LogOut, User, CheckSquare, Search, Bell, MessageSquare } from 'lucide-react'
+import { VoiceButton } from '@/components/ui/voice-button'
 import { useEffect, useState } from 'react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { useTachesUrgentes } from '@/hooks/use-taches'
@@ -130,6 +131,9 @@ export function Header({ titre, estDashboard }: HeaderProps) {
           >
             <Search className="w-4 h-4" />
           </button>
+
+          {/* Agent vocal */}
+          <VoiceButton variant="icon" />
 
           {/* Notif tâches urgentes */}
           <button
