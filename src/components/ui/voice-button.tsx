@@ -13,7 +13,7 @@ interface VoiceButtonProps {
 export function VoiceButton({ variant = 'icon', className }: VoiceButtonProps) {
   const { etat, transcript, demarrer, arreter } = useVoiceAgent()
   const isFab = variant === 'fab'
-  const size = isFab ? 22 : 18
+  const size = isFab ? 24 : 20
 
   function handleClick() {
     if (etat === 'listening') arreter()
@@ -23,46 +23,77 @@ export function VoiceButton({ variant = 'icon', className }: VoiceButtonProps) {
   const title =
     etat === 'listening' ? 'Écoute… cliquer pour arrêter'
     : etat === 'processing' ? (transcript || 'Traitement en cours…')
-    : 'Commande vocale'
+    : 'Commande vocale (darja/français)'
 
   return (
     <div className={cn('relative inline-flex flex-col items-center justify-center', className)}>
-      {/* Anneau pulse pendant l'écoute */}
+
+      {/* ── Anneaux pulse écoute (double ring) ── */}
       <AnimatePresence>
         {etat === 'listening' && (
-          <motion.span
-            key="ring"
-            className={cn(
-              'absolute rounded-full border-2 border-red-400 pointer-events-none',
-              isFab ? 'inset-0' : 'inset-0',
-            )}
-            initial={{ scale: 1, opacity: 0.8 }}
-            animate={{ scale: isFab ? 1.7 : 1.9, opacity: 0 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'easeOut' }}
-          />
+          <>
+            <motion.span
+              key="ring1"
+              className="absolute inset-0 rounded-full border-2 border-red-400 pointer-events-none"
+              initial={{ scale: 1, opacity: 0.9 }}
+              animate={{ scale: isFab ? 1.8 : 2.0, opacity: 0 }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
+            />
+            <motion.span
+              key="ring2"
+              className="absolute inset-0 rounded-full border-2 border-red-300 pointer-events-none"
+              initial={{ scale: 1, opacity: 0.6 }}
+              animate={{ scale: isFab ? 2.3 : 2.6, opacity: 0 }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut', delay: 0.35 }}
+            />
+          </>
         )}
       </AnimatePresence>
 
-      <button
+      {/* ── Anneau glow idle ── */}
+      {etat === 'idle' && !isFab && (
+        <motion.span
+          className="absolute inset-0 rounded-xl bg-indigo-400/20 pointer-events-none"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.15, 0.5] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
+
+      {/* ── Bouton principal ── */}
+      <motion.button
         onClick={handleClick}
         disabled={etat === 'processing' || etat === 'done' || etat === 'error'}
         title={title}
         aria-label={title}
+        animate={
+          etat === 'idle'
+            ? { scale: [1, 1.06, 1] }
+            : etat === 'listening'
+            ? { scale: 1 }
+            : { scale: 1 }
+        }
+        transition={
+          etat === 'idle'
+            ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+            : { duration: 0.2 }
+        }
         className={cn(
-          'relative flex items-center justify-center transition-all duration-200 outline-none select-none',
+          'relative flex items-center justify-center outline-none select-none transition-colors duration-200',
           isFab
-            ? 'w-14 h-14 rounded-full shadow-lg'
-            : 'w-9 h-9 rounded-xl',
-          etat === 'idle' && isFab && 'bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white',
-          etat === 'idle' && !isFab && 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
-          etat === 'listening' && isFab && 'bg-red-500 text-white',
-          etat === 'listening' && !isFab && 'text-red-500 bg-red-50 dark:bg-red-950/30',
-          etat === 'processing' && isFab && 'bg-indigo-400 text-white cursor-wait',
-          etat === 'processing' && !isFab && 'text-indigo-400 cursor-wait',
-          etat === 'done' && isFab && 'bg-green-500 text-white',
-          etat === 'done' && !isFab && 'text-green-500',
-          etat === 'error' && isFab && 'bg-red-500 text-white',
-          etat === 'error' && !isFab && 'text-red-500',
+            ? 'w-14 h-14 rounded-full shadow-xl'
+            : 'w-11 h-11 rounded-xl shadow-md',
+          // Idle — gradient indigo/violet
+          etat === 'idle' && 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 active:scale-95',
+          // Listening — rouge vif
+          etat === 'listening' && 'bg-red-500 text-white shadow-red-500/40',
+          // Processing
+          etat === 'processing' && 'bg-indigo-400 text-white cursor-wait',
+          // Done
+          etat === 'done' && 'bg-green-500 text-white',
+          // Error
+          etat === 'error' && 'bg-red-500 text-white',
+          isFab && (etat === 'idle') && 'shadow-indigo-500/50',
+          isFab && (etat === 'listening') && 'shadow-red-500/50',
         )}
       >
         <AnimatePresence mode="wait">
@@ -72,7 +103,10 @@ export function VoiceButton({ variant = 'icon', className }: VoiceButtonProps) {
             </motion.span>
           )}
           {etat === 'listening' && (
-            <motion.span key="micoff" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.7, opacity: 0 }} transition={{ duration: 0.15 }}>
+            <motion.span key="micoff"
+              initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: [1, 1.2, 1], opacity: 1 }} exit={{ scale: 0.7, opacity: 0 }}
+              transition={{ scale: { duration: 0.8, repeat: Infinity }, opacity: { duration: 0.15 } }}
+            >
               <MicOff size={size} strokeWidth={2} />
             </motion.span>
           )}
@@ -92,9 +126,9 @@ export function VoiceButton({ variant = 'icon', className }: VoiceButtonProps) {
             </motion.span>
           )}
         </AnimatePresence>
-      </button>
+      </motion.button>
 
-      {/* Transcript capturé — affiché pendant processing pour debug */}
+      {/* Transcript capturé pendant processing */}
       <AnimatePresence>
         {etat === 'processing' && transcript && (
           <motion.p
