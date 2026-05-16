@@ -8,6 +8,9 @@ import { useGmail } from '@/hooks/use-gmail'
 import { useReunions } from '@/hooks/use-reunions'
 import { useDocuments } from '@/hooks/use-documents'
 import { useChecklistItems, useChecklistCoches, useToggleCoche } from '@/hooks/use-checklist'
+import { useLicences, joursAvantExpiration } from '@/hooks/use-licences'
+import { useConsommables } from '@/hooks/use-consommables'
+import { useSitesMonitores } from '@/hooks/use-sites-monitores'
 import { estUrgente } from '@/lib/utils'
 import { isToday, format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -15,6 +18,7 @@ import {
   ListTodo, AlertTriangle, Mail, CalendarDays,
   Search, Circle, ArrowRight, FileText, Plus,
   CheckSquare, Square, ClipboardList, KeyRound, Lock,
+  ShieldCheck, Boxes, Activity,
 } from 'lucide-react'
 import { VoiceButton } from '@/components/ui/voice-button'
 import { cn } from '@/lib/utils'
@@ -88,6 +92,14 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
   const { mutate: toggleCoche } = useToggleCoche()
   const cochesSet = new Set(checkCoches.map(c => c.item_id))
   const checkPct = checkItems.length === 0 ? 0 : Math.round((checkCoches.length / checkItems.length) * 100)
+
+  const { data: licences = [] } = useLicences()
+  const { data: consommables = [] } = useConsommables()
+  const { data: sites = [] } = useSitesMonitores()
+
+  const nbLicencesAlerte = licences.filter(l => { const j = joursAvantExpiration(l.date_expiration); return j !== null && j <= 90 }).length
+  const nbConsommablesAlerte = consommables.filter(c => c.stock_actuel <= c.seuil_alerte).length
+  const nbSitesHS = sites.filter(s => s.statut === 'hors_ligne').length
 
   /* Stats */
   const total = taches.length
@@ -257,6 +269,42 @@ export function MobileDashboard({ onOuvrirPalette }: { onOuvrirPalette: () => vo
           </Link>
         </div>
       </div>
+
+      {/* Alertes : Licences / Consommables / Monitoring */}
+      {(nbLicencesAlerte > 0 || nbConsommablesAlerte > 0 || nbSitesHS > 0) && (
+        <div className="grid grid-cols-3 gap-2">
+          <Link href="/licences" className={cn(
+            'rounded-2xl p-3 flex flex-col items-center gap-1 border',
+            nbLicencesAlerte > 0
+              ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-100 dark:border-indigo-900'
+              : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800'
+          )}>
+            <ShieldCheck className={cn('w-5 h-5', nbLicencesAlerte > 0 ? 'text-indigo-500' : 'text-gray-300 dark:text-gray-700')} />
+            <p className={cn('text-lg font-bold leading-none', nbLicencesAlerte > 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400')}>{nbLicencesAlerte}</p>
+            <p className="text-[9px] text-gray-500 dark:text-gray-400 text-center leading-tight">Licences</p>
+          </Link>
+          <Link href="/consommables" className={cn(
+            'rounded-2xl p-3 flex flex-col items-center gap-1 border',
+            nbConsommablesAlerte > 0
+              ? 'bg-orange-50 dark:bg-orange-950/30 border-orange-100 dark:border-orange-900'
+              : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800'
+          )}>
+            <Boxes className={cn('w-5 h-5', nbConsommablesAlerte > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-700')} />
+            <p className={cn('text-lg font-bold leading-none', nbConsommablesAlerte > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-400')}>{nbConsommablesAlerte}</p>
+            <p className="text-[9px] text-gray-500 dark:text-gray-400 text-center leading-tight">Stock bas</p>
+          </Link>
+          <Link href="/monitoring" className={cn(
+            'rounded-2xl p-3 flex flex-col items-center gap-1 border',
+            nbSitesHS > 0
+              ? 'bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-900'
+              : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800'
+          )}>
+            <Activity className={cn('w-5 h-5', nbSitesHS > 0 ? 'text-red-500' : 'text-gray-300 dark:text-gray-700')} />
+            <p className={cn('text-lg font-bold leading-none', nbSitesHS > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400')}>{nbSitesHS}</p>
+            <p className="text-[9px] text-gray-500 dark:text-gray-400 text-center leading-tight">Sites HS</p>
+          </Link>
+        </div>
+      )}
 
       {/* Agenda aujourd'hui */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
