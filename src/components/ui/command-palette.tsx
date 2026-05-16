@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, X,
-  ListTodo, Users, Link2, FileText, Package, Monitor, FolderKanban, CalendarDays, FolderOpen, Wallet
+  ListTodo, Users, Link2, FileText, Package, Monitor, FolderKanban, CalendarDays, FolderOpen, Wallet,
+  ShieldCheck, Boxes, Activity
 } from 'lucide-react'
 import { useTaches } from '@/hooks/use-taches'
 import { useContacts } from '@/hooks/use-contacts'
@@ -17,8 +18,11 @@ import { useConnexions } from '@/hooks/use-connexions'
 import { useProjets } from '@/hooks/use-projets'
 import { useReunions } from '@/hooks/use-reunions'
 import { useCharges } from '@/hooks/use-charges'
+import { useLicences } from '@/hooks/use-licences'
+import { useConsommables } from '@/hooks/use-consommables'
+import { useSitesMonitores } from '@/hooks/use-sites-monitores'
 
-type TypeResultat = 'tache' | 'contact' | 'lien' | 'document' | 'devis' | 'materiel' | 'connexion' | 'projet' | 'reunion' | 'charge'
+type TypeResultat = 'tache' | 'contact' | 'lien' | 'document' | 'devis' | 'materiel' | 'connexion' | 'projet' | 'reunion' | 'charge' | 'licence' | 'consommable' | 'site'
 
 interface Resultat {
   id: string
@@ -39,7 +43,10 @@ const CONFIG_TYPES: Record<TypeResultat, { label: string; icone: React.ReactNode
   connexion: { label: 'Connexion',  icone: <Monitor className="w-3.5 h-3.5" />,      couleur: 'bg-sky-100 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400' },
   projet:    { label: 'Projet',     icone: <FolderKanban className="w-3.5 h-3.5" />, couleur: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400' },
   reunion:   { label: 'Réunion',    icone: <CalendarDays className="w-3.5 h-3.5" />, couleur: 'bg-pink-100 text-pink-600 dark:bg-pink-950/50 dark:text-pink-400' },
-  charge:    { label: 'Charge',     icone: <Wallet className="w-3.5 h-3.5" />,       couleur: 'bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400' },
+  charge:      { label: 'Charge',      icone: <Wallet className="w-3.5 h-3.5" />,       couleur: 'bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400' },
+  licence:     { label: 'Licence',     icone: <ShieldCheck className="w-3.5 h-3.5" />,  couleur: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400' },
+  consommable: { label: 'Consommable', icone: <Boxes className="w-3.5 h-3.5" />,        couleur: 'bg-orange-100 text-orange-600 dark:bg-orange-950/50 dark:text-orange-400' },
+  site:        { label: 'Site',        icone: <Activity className="w-3.5 h-3.5" />,      couleur: 'bg-sky-100 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400' },
 }
 
 interface Props {
@@ -63,6 +70,9 @@ export function CommandPalette({ ouvert, onFermer }: Props) {
   const { data: projets = [] } = useProjets()
   const { data: reunions = [] } = useReunions()
   const { data: charges = [] } = useCharges()
+  const { data: licences = [] } = useLicences()
+  const { data: consommables = [] } = useConsommables()
+  const { data: sites = [] } = useSitesMonitores()
 
   const q = recherche.toLowerCase().trim()
 
@@ -107,6 +117,18 @@ export function CommandPalette({ ouvert, onFermer }: Props) {
       .filter(c => c.titre.toLowerCase().includes(q))
       .slice(0, 3)
       .map(c => ({ id: c.id, type: 'charge' as const, titre: c.titre, sousTitre: `${c.montant} DT`, href: '/charges' })),
+    ...licences
+      .filter(l => l.titre.toLowerCase().includes(q) || l.fournisseur?.toLowerCase().includes(q))
+      .slice(0, 3)
+      .map(l => ({ id: l.id, type: 'licence' as const, titre: l.titre, sousTitre: l.fournisseur ?? l.type, href: '/licences' })),
+    ...consommables
+      .filter(c => c.titre.toLowerCase().includes(q) || c.categorie.toLowerCase().includes(q))
+      .slice(0, 3)
+      .map(c => ({ id: c.id, type: 'consommable' as const, titre: c.titre, sousTitre: `Stock: ${c.stock_actuel}`, href: '/consommables' })),
+    ...sites
+      .filter(s => s.titre.toLowerCase().includes(q) || s.url.toLowerCase().includes(q))
+      .slice(0, 3)
+      .map(s => ({ id: s.id, type: 'site' as const, titre: s.titre, sousTitre: s.url, href: '/monitoring', urlExterne: undefined })),
   ]
 
   const naviguer = useCallback((r: Resultat) => {

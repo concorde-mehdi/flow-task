@@ -83,6 +83,7 @@ export interface Contact {
   poste: string | null
   telephone: string | null
   email: string | null
+  service: string | null
   notes: string | null
   created_at: string
 }
@@ -236,3 +237,51 @@ export type NouveauCoffreMdp = {
   categorie: CategorieCoffre
   notes: string | null
 }
+
+export const TYPES_LICENCES = ['Logiciel', 'Antivirus', 'OS', 'Matériel', 'Cloud', 'Garantie', 'Abonnement', 'Autre'] as const
+export type TypeLicence = typeof TYPES_LICENCES[number]
+
+export interface Licence {
+  id: string
+  user_id: string
+  titre: string
+  type: TypeLicence
+  fournisseur: string | null
+  date_expiration: string | null
+  cle_licence: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type NouvelleLicence = Omit<Licence, 'id' | 'user_id' | 'created_at'>
+
+export const CATEGORIES_CONSOMMABLES = ['Cartouches', 'Câbles', 'Papier', 'Batteries', 'Adaptateurs', 'Disques', 'RAM', 'Autre'] as const
+export type CategorieConsommable = typeof CATEGORIES_CONSOMMABLES[number]
+
+export interface Consommable {
+  id: string
+  user_id: string
+  titre: string
+  categorie: CategorieConsommable
+  stock_actuel: number
+  seuil_alerte: number
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauConsommable = Omit<Consommable, 'id' | 'user_id' | 'created_at'>
+
+export type StatutSite = 'en_ligne' | 'hors_ligne' | 'inconnu'
+
+export interface SiteMonitore {
+  id: string
+  user_id: string
+  titre: string
+  url: string
+  statut: StatutSite
+  derniere_verification: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type NouveauSiteMonitore = Omit<SiteMonitore, 'id' | 'user_id' | 'created_at'>

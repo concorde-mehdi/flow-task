@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Lock, Unlock, Eye, EyeOff, Plus, Trash2, Copy, ExternalLink, KeyRound, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { Lock, Unlock, Eye, EyeOff, Plus, Trash2, Copy, ExternalLink, KeyRound, X, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCoffre, useAjouterMdp, useSupprimerMdp, dechiffrerMdp, getPinSentinel, setPinSentinel, verifierPinCoffre } from '@/hooks/use-coffre'
 import type { CoffreMdp, NouveauCoffreMdp, CategorieCoffre } from '@/types'
@@ -138,6 +138,13 @@ function CarteEntree({ entry, pin, onSupprimer }: { entry: CoffreMdp; pin: strin
   )
 }
 
+function genererMdp(longueur = 16): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*'
+  const arr = new Uint8Array(longueur)
+  crypto.getRandomValues(arr)
+  return Array.from(arr).map(b => chars[b % chars.length]).join('')
+}
+
 /* ─── Formulaire ajout ─── */
 function FormulaireAjout({ pin, onFermer }: { pin: string; onFermer: () => void }) {
   const { mutateAsync: ajouter } = useAjouterMdp()
@@ -173,10 +180,15 @@ function FormulaireAjout({ pin, onFermer }: { pin: string; onFermer: () => void 
         </div>
         <input value={form.identifiant ?? ''} onChange={e => setForm(f => ({ ...f, identifiant: e.target.value || null }))} placeholder="Identifiant / email" className={cls} />
         <div className="relative">
-          <input type={mdpVisible ? 'text' : 'password'} value={form.mdp_clair} onChange={e => setForm(f => ({ ...f, mdp_clair: e.target.value }))} placeholder="Mot de passe *" className={cn(cls, 'pr-7')} />
-          <button type="button" onClick={() => setMdpVisible(v => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
-            {mdpVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-          </button>
+          <input type={mdpVisible ? 'text' : 'password'} value={form.mdp_clair} onChange={e => setForm(f => ({ ...f, mdp_clair: e.target.value }))} placeholder="Mot de passe *" className={cn(cls, 'pr-14')} />
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            <button type="button" onClick={() => setForm(f => ({ ...f, mdp_clair: genererMdp() }))} title="Générer" className="w-5 h-5 rounded flex items-center justify-center text-indigo-400 hover:text-indigo-600">
+              <RefreshCw className="w-3 h-3" />
+            </button>
+            <button type="button" onClick={() => setMdpVisible(v => !v)} className="w-5 h-5 rounded flex items-center justify-center text-gray-400 hover:text-gray-600">
+              {mdpVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+            </button>
+          </div>
         </div>
         <button type="submit" disabled={loading} className="w-full py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 disabled:opacity-60 text-white text-xs font-semibold transition-colors">
           {loading ? 'Chiffrement…' : 'Enregistrer'}

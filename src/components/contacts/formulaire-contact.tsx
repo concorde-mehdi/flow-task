@@ -20,6 +20,7 @@ export function FormulaireContact({ ouvert, onFermer, contactAModifier }: Props)
 
   const [nom, setNom] = useState('')
   const [poste, setPoste] = useState('')
+  const [service, setService] = useState('')
   const [telephone, setTelephone] = useState('')
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
@@ -28,11 +29,12 @@ export function FormulaireContact({ ouvert, onFermer, contactAModifier }: Props)
     if (contactAModifier) {
       setNom(contactAModifier.nom)
       setPoste(contactAModifier.poste ?? '')
+      setService(contactAModifier.service ?? '')
       setTelephone(contactAModifier.telephone ?? '')
       setEmail(contactAModifier.email ?? '')
       setNotes(contactAModifier.notes ?? '')
     } else {
-      setNom(''); setPoste(''); setTelephone(''); setEmail(''); setNotes('')
+      setNom(''); setPoste(''); setService(''); setTelephone(''); setEmail(''); setNotes('')
     }
   }, [contactAModifier, ouvert])
 
@@ -41,6 +43,7 @@ export function FormulaireContact({ ouvert, onFermer, contactAModifier }: Props)
     const contact: NouveauContact = {
       nom: nom.trim(),
       poste: poste.trim() || null,
+      service: service.trim() || null,
       telephone: telephone.trim() || null,
       email: email.trim() || null,
       notes: notes.trim() || null,
@@ -62,7 +65,10 @@ export function FormulaireContact({ ouvert, onFermer, contactAModifier }: Props)
         </DialogHeader>
         <div className="space-y-3 py-2">
           <Input placeholder="Nom *" value={nom} onChange={e => setNom(e.target.value)} autoFocus />
-          <Input placeholder="Poste / Fonction" value={poste} onChange={e => setPoste(e.target.value)} />
+          <div className="grid grid-cols-2 gap-2">
+            <Input placeholder="Poste / Fonction" value={poste} onChange={e => setPoste(e.target.value)} />
+            <Input placeholder="Service (ex: Médecins)" value={service} onChange={e => setService(e.target.value)} />
+          </div>
           <Input placeholder="Téléphone" value={telephone} onChange={e => setTelephone(e.target.value)} type="tel" />
           <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} type="email" />
           <Textarea placeholder="Notes (optionnel)" value={notes} onChange={e => setNotes(e.target.value)} rows={2} />
