@@ -68,7 +68,15 @@ export default function PageDashboard() {
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative isolate">
+
+        {/* ── Mesh gradient background ── */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
+          <div className="absolute -top-32 -right-16 h-[580px] w-[580px] rounded-full bg-indigo-300/25 dark:bg-indigo-500/10 blur-3xl" />
+          <div className="absolute top-[38%] -left-24 h-[480px] w-[480px] rounded-full bg-sky-300/20 dark:bg-sky-500/8 blur-3xl" />
+          <div className="absolute bottom-10 right-[28%] h-[420px] w-[420px] rounded-full bg-violet-300/18 dark:bg-violet-500/8 blur-3xl" />
+        </div>
+
         <Header titre="Tableau de bord" estDashboard />
 
         {/* ══ MOBILE LAYOUT ══ */}
