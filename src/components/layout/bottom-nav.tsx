@@ -7,7 +7,7 @@ import {
   LayoutDashboard, ListTodo, Calendar, User, Menu, X,
   Wallet, Mail, Link2, Users, FileText, Package,
   CalendarDays, FolderOpen, Monitor, FolderKanban, Settings,
-  Plus,
+  Plus, ShieldCheck, Boxes, Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
@@ -34,8 +34,11 @@ const itemsMenu = [
   { nom: 'Connexions PC',  href: '/connexions', icone: Monitor },
   { nom: 'Devis',          href: '/devis',      icone: FileText },
   { nom: 'Matériel',       href: '/materiel',   icone: Package },
-  { nom: 'Annuaire',       href: '/contacts',   icone: Users },
-  { nom: 'Paramètres',     href: '/parametres', icone: Settings },
+  { nom: 'Annuaire',       href: '/contacts',     icone: Users },
+  { nom: 'Licences',       href: '/licences',     icone: ShieldCheck },
+  { nom: 'Consommables',   href: '/consommables', icone: Boxes },
+  { nom: 'Monitoring',     href: '/monitoring',   icone: Activity },
+  { nom: 'Paramètres',     href: '/parametres',   icone: Settings },
 ]
 
 export function BottomNav() {
