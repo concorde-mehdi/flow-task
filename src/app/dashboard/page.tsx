@@ -28,6 +28,7 @@ import { WidgetReseau } from '@/components/dashboard/widget-reseau'
 import { WidgetLicences } from '@/components/dashboard/widget-licences'
 import { WidgetConsommables } from '@/components/dashboard/widget-consommables'
 import { WidgetMonitoring } from '@/components/dashboard/widget-monitoring'
+import { WidgetLignesMobiles } from '@/components/dashboard/widget-lignes-mobiles'
 import { MobileDashboard } from '@/components/dashboard/mobile-dashboard'
 import { CarteTache } from '@/components/taches/carte-tache'
 import { FormulairesTache } from '@/components/taches/formulaire-tache'
@@ -122,11 +123,12 @@ export default function PageDashboard() {
             <WidgetRaccourcis />
           </div>
 
-          {/* Licences | Consommables | Monitoring */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Licences | Consommables | Monitoring | Flotte mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <WidgetLicences />
             <WidgetConsommables />
             <WidgetMonitoring />
+            <WidgetLignesMobiles />
           </div>
 
           {/* Ajout rapide */}

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, ListTodo, Calendar, Settings, CheckSquare, Wallet, Mail,
   Link2, Users, FileText, Package, CalendarDays, FolderOpen, Monitor, FolderKanban,
-  Crown, Sparkles, ShieldCheck, Boxes, Activity,
+  Crown, Sparkles, ShieldCheck, Boxes, Activity, Smartphone,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
@@ -28,9 +28,10 @@ const navigation = [
   { nom: 'Devis',           href: '/devis',        icone: FileText },
   { nom: 'Matériel',        href: '/materiel',     icone: Package },
   { nom: 'Annuaire',        href: '/contacts',     icone: Users },
-  { nom: 'Licences',        href: '/licences',     icone: ShieldCheck },
-  { nom: 'Consommables',    href: '/consommables', icone: Boxes },
-  { nom: 'Monitoring',      href: '/monitoring',   icone: Activity },
+  { nom: 'Flotte mobile',    href: '/lignes-mobiles', icone: Smartphone },
+  { nom: 'Licences',        href: '/licences',       icone: ShieldCheck },
+  { nom: 'Consommables',    href: '/consommables',   icone: Boxes },
+  { nom: 'Monitoring',      href: '/monitoring',     icone: Activity },
   { nom: 'Paramètres',      href: '/parametres',   icone: Settings },
 ]
 

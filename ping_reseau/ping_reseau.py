@@ -12,7 +12,7 @@ from datetime import datetime
 
 # ── Configuration ──────────────────────────────────────────────────────────
 SUPABASE_URL  = "https://ojmlrcoufbjusrbulumg.supabase.co"
-SERVICE_KEY   = "COLLE_ICI_TA_SERVICE_ROLE_KEY"   # Supabase → Settings → API → service_role
+SERVICE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qbWxyY291ZmJqdXNyYnVsdW1nIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODQyNjU3OCwiZXhwIjoyMDk0MDAyNTc4fQ.3vHH2j-OTmcoOrs-2tJ98N9oJh0vkgNTlKcDyxVnQwM"   # Supabase → Settings → API → service_role
 PING_TIMEOUT  = 1000   # ms par tentative
 PING_COUNT    = 1      # nombre de pings par IP
 # ───────────────────────────────────────────────────────────────────────────
@@ -53,7 +53,8 @@ def update_statut(id: str, statut: str):
         json={"statut": statut},
         timeout=10,
     )
-    resp.raise_for_status()
+    if not resp.ok:
+        raise Exception(f"{resp.status_code} — {resp.text}")
 
 def main():
     print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Scan réseau FlowTask")

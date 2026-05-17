@@ -285,3 +285,19 @@ export interface SiteMonitore {
 }
 
 export type NouveauSiteMonitore = Omit<SiteMonitore, 'id' | 'user_id' | 'created_at'>
+
+export type StatutLigne = 'active' | 'suspendue' | 'resiliee' | 'en_attente'
+
+export interface LigneMobile {
+  id: string
+  user_id: string
+  numero: string
+  type_forfait: string | null
+  titulaire: string | null
+  statut: StatutLigne
+  date_activation: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type NouvelleLigneMobile = Omit<LigneMobile, 'id' | 'user_id' | 'created_at'>
