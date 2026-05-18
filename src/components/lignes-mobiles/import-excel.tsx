@@ -84,7 +84,7 @@ export function ImportExcel({ onFermer }: Props) {
 
   function construirePreview() {
     if (!mapping.numero) return
-    const rows = rawRows.slice(0, 200).map(row => ({
+    const rows = rawRows.slice(0, 300).map(row => ({
       numero: String(row[mapping.numero!] ?? '').trim(),
       type_forfait: mapping.forfait ? String(row[mapping.forfait] ?? '').trim() || null : null,
       titulaire: mapping.titulaire ? String(row[mapping.titulaire] ?? '').trim() || null : null,
@@ -225,7 +225,7 @@ export function ImportExcel({ onFermer }: Props) {
                 <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
                 <p className="text-xs text-emerald-700 dark:text-emerald-400">
                   <strong>{preview.length}</strong> lignes prêtes à importer
-                  {rawRows.length > 200 && <span className="text-gray-400"> (limité à 200 pour l'aperçu)</span>}
+                  {rawRows.length > 300 && <span className="text-gray-400"> (limité à 300 lignes)</span>}
                 </p>
               </div>
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
